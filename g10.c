@@ -9,6 +9,8 @@ int main(int argc, char ** argv){
   //base_display(base);
 
   bases_display();
+
+  listern_start();
   
   return 0;
 }
