@@ -8,7 +8,8 @@
 #include "relation.h"
 #include "relations.h"
 #include "data.h"
+#include "listener.h"
 
 long int swid=0; /*System Wide ID*/
 struct dll * bases=NULL;
-
+int goon=0;
