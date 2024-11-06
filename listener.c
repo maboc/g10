@@ -40,7 +40,7 @@ void * listener_start(void * data_in){
 	
 	s=malloc(100);
 	sprintf(s, "Accepted a connection on socket %i", sck);
-	printf("%i\n", s);
+	printf("%s\n", s);
 	free(s);
 	
 	pthread_t pt;

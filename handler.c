@@ -8,8 +8,9 @@ void * handler(void * sck){
   
   output_line(s, "Welcome G10\r\n");
 
-  inpbuf=malloc(1000);
+
   while (proceed==0){
+    inpbuf=malloc(1000);
     bzero(inpbuf,1000);
     read(s, inpbuf,1000);
 
@@ -18,9 +19,16 @@ void * handler(void * sck){
     if (strncmp(commands_get_part(commands,1), "quit", strlen("quit"))==0){
       proceed=1;
     }
+    if (strncmp(commands_get_part(commands,1), "shutdown", strlen("shutdown"))==0){
+      proceed=1;
+      goon=1;
+    }
     write(s, commands_get_part(commands,1), strlen(commands_get_part(commands,1)));
+
+    //    free(inpbuf);
+    commands=commands_free(commands);
   }
 
-  
-  return NULL;
+  close(s);
+  pthread_exit(NULL);
 }
