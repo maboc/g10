@@ -102,6 +102,28 @@ char * remove_mid_spaces(char * inp){
   return tmp;
 }
 
+struct dll * break_up(struct dll * commands, char * inp){
+  char * tmp;
+  char * tmp2;
+  
+  tmp=inp;
+  
+  while(strstr(tmp, " ")!=NULL){
+    tmp2=malloc(strstr(tmp, " ")-tmp+1);
+    bzero(tmp2, strstr(tmp, " ")-tmp+1);
+    tmp2=strncpy(tmp2, tmp, strstr(tmp, " ")-tmp);
+
+    commands=dll_add(commands, tmp2);
+    tmp=strstr(tmp, " ")+1;
+  }
+  tmp2=malloc(strlen(tmp)+1);
+  bzero(tmp2, strlen(tmp)+1);
+  tmp2=strncpy(tmp2, tmp, strlen(tmp));
+  commands=dll_add(commands, tmp2);
+  
+  return commands;
+}
+
 struct dll * parse(char * inpbuf){
   char * no_leading_spaces;
   char * no_trailing_spaces;
@@ -115,7 +137,7 @@ struct dll * parse(char * inpbuf){
   free(no_leading_spaces);
   no_mid_spaces=remove_mid_spaces(no_trailing_spaces);
   free(no_trailing_spaces);
-
+  parts=break_up(parts, no_mid_spaces);
   
   // parts=dll_add(parts, no_mid_spaces);
 
