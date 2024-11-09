@@ -73,17 +73,51 @@ char * remove_trailing_spaces(char * inp){
   return tmp;
 }
 
+char * remove_mid_spaces(char * inp){
+  char * tmp; //result string
+  char * p_tmp; //positional character
+  char * p;
+  int n;
+  
+  tmp=malloc(strlen(inp)+1);
+  bzero(tmp, strlen(inp)+1);
+  p_tmp=tmp;
+
+  p=inp;
+  n=0; //number of consecutive spaces (if bigger then one we do not need this space)
+  while (p!=inp+strlen(inp)){
+    if(strncmp(p, " ", 1)==0){
+      n++;
+    } else {
+      n=0;
+    }
+
+    if(n<2){
+      *p_tmp=*p;
+      p_tmp=p_tmp+1;
+    } 
+      p=p+1;      
+  }
+
+  return tmp;
+}
+
 struct dll * parse(char * inpbuf){
   char * no_leading_spaces;
   char * no_trailing_spaces;
+  char * no_mid_spaces;
+  
   struct dll * parts=NULL;
   
   no_leading_spaces=remove_leading_spaces(inpbuf);
   free(inpbuf);
   no_trailing_spaces=remove_trailing_spaces(no_leading_spaces);
   free(no_leading_spaces);
-  parts=dll_add(parts, no_trailing_spaces);
-  //  free(no_trailing_spaces);
+  no_mid_spaces=remove_mid_spaces(no_trailing_spaces);
+  free(no_trailing_spaces);
+
+  
+  // parts=dll_add(parts, no_mid_spaces);
 
   return parts;
 }
