@@ -11,6 +11,7 @@
 
 extern int goon;
 
+void write_prompt(int);
 void * handler(void * data_in);
 
 #endif
