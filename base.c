@@ -1,5 +1,22 @@
 #include "base.h"
 
+void base_list(int s, struct base_struct * b){
+  char * tmp;
+
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "--- Base ---\r\n");
+  write(s, tmp, strlen(tmp));
+  bzero(tmp, 100);
+  sprintf(tmp, "SWID : %i\r\n", b->swid);
+  write(s, tmp, strlen(tmp));
+  bzero(tmp, 100);
+  sprintf(tmp, "Nodes : %i\n", nodes_count(b->nodes));
+  write(s, tmp, strlen(tmp));
+  free(tmp);
+  attributes_list(s, b->attributes);
+}
+
 struct base_struct * base_new(){
   struct base_struct * b;
 

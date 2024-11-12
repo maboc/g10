@@ -2,10 +2,12 @@
 #define _ATTRIBUTES_
 
 #include <stdio.h>
+#include <unistd.h>
 #include "structs.h"
 #include "dll.h"
 #include "attribute.h"
 
+void attributes_list(int, struct dll *);
 void attributes_display(struct dll *);
 long int attributes_count(struct dll *);
 

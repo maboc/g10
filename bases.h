@@ -8,6 +8,7 @@
 
 extern struct dll * bases;
 
+void bases_list(int);
 void bases_display();
 long int bases_count();
 

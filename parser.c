@@ -124,6 +124,19 @@ struct dll * break_up(struct dll * commands, char * inp){
   return commands;
 }
 
+int commands_count(struct dll * commands){
+  int n=0;
+  if (commands!=NULL){
+    commands=dll_first(commands);
+    while(commands->next!=NULL){
+      commands=commands->next;
+      n++;
+    }
+    n++;
+  }
+  return n;
+}
+
 struct dll * parse(char * inpbuf){
   char * no_leading_spaces;
   char * no_trailing_spaces;
