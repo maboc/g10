@@ -1,5 +1,17 @@
 #include "handler.h"
 
+void write_prompt(int s){
+  char * tmp;
+
+  tmp=malloc(10);
+  bzero(tmp, 10);
+  sprintf(tmp, "\n\n > ");
+  write(s, tmp, strlen(tmp));
+
+  free(tmp);
+  
+}
+
 void * handler(void * sck){
   int s = *(int *) sck;
   int proceed =0;//0 - proceed 1 - stop proceeding (quit)
@@ -8,16 +20,14 @@ void * handler(void * sck){
   
   output_line(s, "Welcome G10\r\n");
 
-
+  write_prompt(s);
+  
   while (proceed==0){
     inpbuf=malloc(1000);
     bzero(inpbuf,1000);
     read(s, inpbuf,1000);
 
-
     commands=parse(inpbuf);
-    write(s, commands_get_part(commands,1), strlen(commands_get_part(commands,1)));
-
     
     if (strncmp(commands_get_part(commands,1), "quit", strlen("quit"))==0){
       proceed=1;
@@ -33,6 +43,8 @@ void * handler(void * sck){
     }
 
     commands=commands_free(commands);
+    write_prompt(s);
+
   }
 
   close(s);
