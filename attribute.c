@@ -1,5 +1,16 @@
 #include "attribute.h"
 
+void attribute_list(int s, struct attribute_struct * a){
+  char * tmp;
+  
+  if(a!=NULL){
+    tmp=malloc(strlen(a->key)+strlen(a->value)+10+10);//+10 for the swid and +10 for the extra spaces
+    bzero(tmp, strlen(a->key)+strlen(a->value)+10+10);
+    sprintf(tmp, "%i  %s  %s\n", a->swid, a->key, a->value);
+    write(s, tmp, strlen(tmp));
+  }
+}
+
 struct attribute_struct * attribute_new(char * key, char * value){
   struct attribute_struct * a;
 

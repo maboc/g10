@@ -1,5 +1,19 @@
 #include "bases.h"
 
+void bases_list(int s){
+  struct dll * bs;
+
+  bs=bases;
+  if(bs!=NULL){
+    bs=dll_first(bs);
+    while (bs->next!=NULL){
+      base_list(s, bs->payload);
+      bs=bs->next;
+    }
+    base_list(s, bs->payload);
+  }
+}
+
 void bases_display(){
   struct dll * bs;
 

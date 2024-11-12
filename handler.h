@@ -7,6 +7,7 @@
 #include "output.h"
 #include "structs.h"
 #include "parser.h"
+#include "bases.h"
 
 extern int goon;
 

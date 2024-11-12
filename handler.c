@@ -14,18 +14,24 @@ void * handler(void * sck){
     bzero(inpbuf,1000);
     read(s, inpbuf,1000);
 
+
     commands=parse(inpbuf);
+    write(s, commands_get_part(commands,1), strlen(commands_get_part(commands,1)));
+
     
     if (strncmp(commands_get_part(commands,1), "quit", strlen("quit"))==0){
       proceed=1;
-    }
-    if (strncmp(commands_get_part(commands,1), "shutdown", strlen("shutdown"))==0){
+    } else if (strncmp(commands_get_part(commands,1), "shutdown", strlen("shutdown"))==0){
       proceed=1;
       goon=1;
-    }
-    write(s, commands_get_part(commands,1), strlen(commands_get_part(commands,1)));
+    } 
 
-    //    free(inpbuf);
+    if (strncmp(commands_get_part(commands,1), "bases", strlen("bases"))==0){
+      if(strncmp(commands_get_part(commands,2), "list", strlen("list"))==0){
+	bases_list(s);
+      }
+    }
+
     commands=commands_free(commands);
   }
 
