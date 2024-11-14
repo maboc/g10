@@ -8,7 +8,7 @@
 #include "attribute.h"
 
 void attributes_list(int, struct dll *);
-void attributes_display(struct dll *);
+void attributes_display(int, struct dll *);
 long int attributes_count(struct dll *);
 
 #endif

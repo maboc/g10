@@ -11,11 +11,20 @@ struct relation_struct * relation_new(struct node_struct * n){
   return r;
 }
 
-void relation_display(struct relation_struct * r){
+void relation_display(int s, struct relation_struct * r){
+  char * tmp;
 
-  printf("--- Relation ---\n");
-  printf("SWID : %i\n", r->swid);
-  printf("Relates to : %i\n", r->node_to->swid);
-  attributes_display(r->attributes);
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp,"--- Relation ---\r\n");
+  write(s, tmp, strlen(tmp));
+  bzero(tmp, 100);
+  sprintf(tmp, "SWID : %i\r\n", r->swid);
+  write(s, tmp, strlen(tmp));
+  bzero(tmp, 100);
+  sprintf(tmp, "Relates to : %i\r\n", r->node_to->swid);
+  write(s, tmp, strlen(tmp));
+  free(tmp);
+  attributes_display(s, r->attributes);
   
 }

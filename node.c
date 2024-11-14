@@ -1,5 +1,24 @@
 #include "node.h"
 
+int node_match_attribute(struct node_struct * node, char * key, char * value){
+  struct dll * list;
+  struct attribute_struct * attr;
+  int result=0;
+
+  if(node->attributes!=NULL){
+    list=node->attributes;
+    list=dll_first(list);
+    while (list->next!=NULL){
+      attr=list->payload;
+      if ((strncmp(attr->key, key, strlen(key))==0) && (strncmp(attr->value, value, strlen(value))==0)) result++;
+      list=list->next;
+    }
+    attr=list->payload;
+    if ((strncmp(attr->key, key, strlen(key))==0) && (strncmp(attr->value, value, strlen(value))==0)) result++;
+  }
+  return result;
+}
+
 struct node_struct * node_new(){
 
   struct node_struct * n;
@@ -14,16 +33,24 @@ struct node_struct * node_new(){
   return n;
 }
 
-void node_display(struct node_struct * node){
+void node_display(int s, struct node_struct * node){
   struct dll * l;
   
   if(node!=NULL){
-    printf("--- Node ---\n");
-    printf("Swid : %i\n", node->swid);
+    char * tmp;
+
+    tmp=malloc(100);
+    bzero(tmp, 100);
+    sprintf(tmp,"--- Node ---\r\n");
+    write(s, tmp, strlen(tmp));
+    bzero(tmp,100);
+    sprintf(tmp, "Swid : %i\r\n", node->swid);
+    write(s, tmp, strlen(tmp));
+    free(tmp);
     l=node->attributes;
-    attributes_display(l);
+    attributes_display(s, l);
     l=node->relations;
-    relations_display(l);
+    relations_display(s, l);
   }
 }
 

@@ -11,6 +11,7 @@
 
 extern int goon;
 
+struct dll * results_free(struct dll *);
 void write_prompt(int);
 void * handler(void * data_in);
 

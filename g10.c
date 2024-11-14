@@ -2,7 +2,7 @@
 
 int main(int argc, char ** argv){
   
-  printf("g10\n");
+  printf("g10\r\n");
 
   data_load();
   

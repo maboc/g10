@@ -7,7 +7,7 @@ void attributes_list(int s, struct dll * l){
     tmp=malloc(100);
     bzero(tmp, 100);
     
-    sprintf(tmp, "Attributes # : %i\n", attributes_count(l));
+    sprintf(tmp, "Attributes # : %i\r\n", attributes_count(l));
     write(s, tmp, strlen(tmp));
     free(tmp);
     l=dll_first(l);
@@ -19,15 +19,22 @@ void attributes_list(int s, struct dll * l){
   }
 }
 
-void attributes_display(struct dll * l){
+void attributes_display(int s, struct dll * l){
+ char * tmp;
+  
   if(l!=NULL){
-    printf("Attributes # : %i\n", attributes_count(l));
+    tmp=malloc(100);
+    bzero(tmp, 100);
+    
+    sprintf(tmp, "Attributes # : %i\r\n", attributes_count(l));
+    write(s, tmp, strlen(tmp));
+    free(tmp);
     l=dll_first(l);
     while(l->next!=NULL){
-      attribute_display(l->payload);
+      attribute_display(s, l->payload);
       l=l->next;
     }
-    attribute_display(l->payload);
+    attribute_display(s, l->payload);
   }
 }
 

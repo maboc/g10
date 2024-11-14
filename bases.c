@@ -36,18 +36,17 @@ void bases_list(int s){
   }
 }
 
-void bases_display(){
+void bases_display(int s){
   struct dll * bs;
 
-  printf("Bases : %i\n", bases_count());
-  
-  bs=dll_first(bases);
+  bs=bases;
   if(bs!=NULL){
+    bs=dll_first(bs);
     while (bs->next!=NULL){
-      base_display(bs->payload);
+      base_list(s, bs->payload);
       bs=bs->next;
     }
-    base_display(bs->payload);
+    base_list(s, bs->payload);
   }
 }
   

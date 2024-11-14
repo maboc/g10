@@ -11,7 +11,7 @@ void base_list(int s, struct base_struct * b){
   sprintf(tmp, "SWID : %i\r\n", b->swid);
   write(s, tmp, strlen(tmp));
   bzero(tmp, 100);
-  sprintf(tmp, "Nodes : %i\n", nodes_count(b->nodes));
+  sprintf(tmp, "Nodes : %i\r\n", nodes_count(b->nodes));
   write(s, tmp, strlen(tmp));
   free(tmp);
   attributes_list(s, b->attributes);
@@ -28,19 +28,21 @@ struct base_struct * base_new(){
   return b;
 }
 
-void base_display(struct base_struct * base){
-  struct dll * l;
-  if (base!=NULL){
-    printf("=== Base ===\n");
-    printf("SWID : %i\n", base->swid);
-
-    l=base->attributes;
-    attributes_display(l);
-    
-    l=base->nodes;
-    nodes_display(l);
-    
-  }
+void base_display(int s, struct base_struct * b){
+  char * tmp;
+  
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "--- Base ---\r\n");
+  write(s, tmp, strlen(tmp));
+  bzero(tmp, 100);
+  sprintf(tmp, "SWID : %i\r\n", b->swid);
+  write(s, tmp, strlen(tmp));
+  bzero(tmp, 100);
+  sprintf(tmp, "Nodes : %i\r\n", nodes_count(b->nodes));
+  write(s, tmp, strlen(tmp));
+  free(tmp);
+  attributes_list(s, b->attributes);
 }
 
 struct base_struct * base_search_by_swid(long int swid){
@@ -56,9 +58,9 @@ struct base_struct * base_search_by_swid(long int swid){
     while(bs->next!=NULL && gevonden==0){
       tmp=bs->payload;
       if (tmp->swid==swid){
-	  b=tmp;
-	  gevonden=1;
-	}
+	b=tmp;
+	gevonden=1;
+      }
       bs=bs->next;
     }
     tmp=bs->payload; 
