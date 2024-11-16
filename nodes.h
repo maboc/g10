@@ -4,7 +4,8 @@
 #include "structs.h"
 #include "node.h"
 
-void nodes_display(struct dll *);
+struct dll * nodes_search(struct dll *, char *, char *);
+void nodes_display(int, struct dll *);
 long int nodes_count(struct dll *);
 
 #endif

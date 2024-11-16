@@ -12,7 +12,7 @@ void * listener_start(void * data_in){
   
   sckt = socket(AF_INET, SOCK_STREAM,0);
   if (sckt == -1 ){
-    printf("problems creating listening socket\n");
+    printf("problems creating listening socket\r\n");
   } else {
     printf("Listening socket created\n");
     
@@ -22,7 +22,7 @@ void * listener_start(void * data_in){
     if(bind(sckt,(struct sockaddr *)&remote,sizeof(remote))!=0){
       printf("Socket binding did not succeed\n");
     } else {
-      printf("Socket binding succeeded\n");
+      printf("Socket binding succeeded\r\n");
       
       /* Start listening on the socket */
       /* 10 is the numbber of connections in backlog */
@@ -32,15 +32,15 @@ void * listener_start(void * data_in){
       clnt_ln = sizeof(struct sockaddr_in);
       
       while (goon==0){
-	printf("in listening loop\n");
+	printf("in listening loop\r\n");
 	
 	/* if an connection arrives ....accept it */
 	sck = accept(sckt, (struct sockaddr *) &clnt, (socklen_t*)&clnt_ln);
 	/* sck is a file desciptor */
 	
 	s=malloc(100);
-	sprintf(s, "Accepted a connection on socket %i", sck);
-	printf("%s\n", s);
+	sprintf(s, "Accepted a connection on socket %i\r\n", sck);
+	printf("%s\r\n", s);
 	free(s);
 	
 	pthread_t pt;
@@ -48,7 +48,7 @@ void * listener_start(void * data_in){
 	rc=pthread_create(&pt, NULL, handler, &sck);
 	
       }
-      printf("Shutdown issued\n");
+      printf("Shutdown issued\r\n");
       close(sckt);            
     }
   }

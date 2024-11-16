@@ -12,6 +12,6 @@ extern long int swid;
 
 void attribute_list(int, struct attribute_struct *);
 struct attribute_struct * attribute_new(char *, char *);
-void attribute_display(struct attribute_struct *);
+void attribute_display(int s, struct attribute_struct *);
 
 #endif
