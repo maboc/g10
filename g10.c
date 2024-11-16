@@ -4,6 +4,9 @@ int main(int argc, char ** argv){
   
   printf("g10\r\n");
 
+  config=config_read();
+
+  
   data_load();
   
   //base_display(base);

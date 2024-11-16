@@ -9,7 +9,9 @@
 #include "relations.h"
 #include "data.h"
 #include "listener.h"
+#include "config.h"
 
+struct config_struct * config=NULL;
 long int swid=0; /*System Wide ID*/
 struct dll * bases=NULL;
 int goon=0;
