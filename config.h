@@ -5,9 +5,12 @@
 #include <string.h>
 #include <stdio.h>
 #include "structs.h"
+#include "dll.h"
+#include "attribute.h"
+#include "node.h"
 
-extern struct config_struct * config;
+extern struct dll * config;
 
-struct config_struct * config_read();
+struct dll * config_init();
 
 #endif

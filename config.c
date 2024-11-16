@@ -1,19 +1,16 @@
 #include "config.h"
 
-struct config_struct * config_read(void){
-  char * tmp;
-  
-  config=malloc(sizeof(struct config_struct));
+struct dll * config_init(void){
+  struct dll * config=NULL;
+  struct node_struct * config_node;
+  struct attribute_struct * attr;
 
-  config->data_writer_interval=3;
-
-  tmp=malloc(1000);
-  bzero(tmp,1000);
-  sprintf(tmp,"./");
+  config_node=node_new();
+  attr=attribute_new("data_writer_interval", "3");
+  config_node->attributes=dll_add(config_node->attributes, attr);
+  attr=attribute_new("data_dir", "./");
   
-  config->data_dir=malloc(strlen(tmp));
-  config->data_dir=strncpy(config->data_dir, tmp, strlen(tmp));
-  free(tmp);
-  
+  config=dll_add(config, config_node);
+ 
   return config;  
 }

@@ -4,7 +4,7 @@ int main(int argc, char ** argv){
   
   printf("g10\r\n");
 
-  config=config_read();
+  config=config_init();
 
   
   data_load();

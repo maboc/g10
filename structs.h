@@ -31,8 +31,4 @@ struct base_struct{
   struct dll * nodes;
 };
 
-struct config_struct{
-  int data_writer_interval;
-  char * data_dir;
-};
 #endif
