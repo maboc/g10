@@ -15,6 +15,8 @@ struct dll * config_init(void){
   bs=dll_add(bs, config_base);
   
   config_node=node_new();
+  attr=attribute_new("node", "config");
+  config_node->attributes=dll_add(config_node->attributes, attr);
   attr=attribute_new("data_writer_interval", "3");
   config_node->attributes=dll_add(config_node->attributes, attr);
   attr=attribute_new("data_dir", "./");
