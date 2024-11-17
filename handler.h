@@ -10,6 +10,7 @@
 #include "bases.h"
 
 extern int goon;
+extern struct dll * config;
 
 struct dll * results_free(struct dll *);
 void write_prompt(int);

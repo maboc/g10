@@ -10,7 +10,7 @@ extern struct dll * bases;
 
 struct base_struct * base_search_on_id(int);
 void bases_list(int);
-void bases_display();
+void bases_display(int);
 long int bases_count();
 
 #endif

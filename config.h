@@ -8,9 +8,10 @@
 #include "dll.h"
 #include "attribute.h"
 #include "node.h"
+#include "base.h"
 
-extern struct dll * config;
+extern struct dll * bases;
 
-struct dll * config_init();
+struct dll * config_init(void);
 
 #endif
