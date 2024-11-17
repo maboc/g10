@@ -40,8 +40,9 @@ void data_load(){
   base->attributes=dll_add(base->attributes, attribute);
 
   bases=dll_add(bases, base);//add the base to the list of bases
-
-  base=base_search_by_swid(0);
+  
+  base=base_search_by_swid(5);
+  /*
   n1=node_search_by_swid(base,2);
   n2=node_search_by_swid(base,5);
   r=relation_new(n2);
@@ -53,7 +54,7 @@ void data_load(){
   n2->relations=dll_add(n2->relations,r);
   attribute=attribute_new("type","partner");
   r->attributes=dll_add(r->attributes, attribute);
-
+  
   base=base_search_by_swid(0);
 
   node=node_new();
@@ -88,7 +89,7 @@ void data_load(){
   attribute=attribute_new("geslacht", "vrouwlijk");
   node->attributes=dll_add(node->attributes, attribute);
   base->nodes=dll_add(base->nodes, node);
-
+  
   base=base_search_by_swid(0);
   n1=node_search_by_swid(base,2);
   n2=node_search_by_swid(base,17);
@@ -130,5 +131,5 @@ void data_load(){
   n1->relations=dll_add(n1->relations,r);
   attribute=attribute_new("type","moeder");
   r->attributes=dll_add(r->attributes, attribute);
-  
+  */
 }

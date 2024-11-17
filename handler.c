@@ -110,6 +110,14 @@ void * handler(void * sck){
 
 	}
       }
+    } else if (strncmp(commands_get_part(commands,1), "config", 6)==0){
+      if (commands_count(commands)==2) {
+	if (strncmp(commands_get_part(commands,1), "list", 4)==0){
+	  if (bases!=NULL){
+	    bases_display(s);
+	  }
+	}
+      }
     }
     
     commands=commands_free(commands);

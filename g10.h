@@ -9,6 +9,7 @@
 #include "relations.h"
 #include "data.h"
 #include "listener.h"
+#include "config.h"
 
 long int swid=0; /*System Wide ID*/
 struct dll * bases=NULL;
