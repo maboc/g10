@@ -1,6 +1,6 @@
 #include "bases.h"
 
-struct base_struct * base_search_on_id(int isearch){
+struct base_struct * bases_search_on_id(int isearch){
   struct dll * bs;
   struct base_struct * b;
   struct base_struct * tmp_b;

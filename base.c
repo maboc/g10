@@ -43,6 +43,7 @@ void base_display(int s, struct base_struct * b){
   write(s, tmp, strlen(tmp));
   free(tmp);
   attributes_list(s, b->attributes);
+  nodes_display(s, b->nodes);
 }
 
 struct base_struct * base_search_by_swid(long int swid){

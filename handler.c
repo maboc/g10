@@ -80,7 +80,7 @@ void * handler(void * sck){
 	write(s, tmp_local, strlen(tmp_local));
 	free(tmp_local);
 
-	active_base=base_search_on_id(isearch);
+	active_base=bases_search_on_id(isearch);
 	if(active_base!=NULL) base_list(s, active_base);
 	
       } else {
@@ -112,10 +112,25 @@ void * handler(void * sck){
       }
     } else if (strncmp(commands_get_part(commands,1), "config", 6)==0){
       if (commands_count(commands)==2) {
-	if (strncmp(commands_get_part(commands,1), "list", 4)==0){
+	if (strncmp(commands_get_part(commands,2), "list", 4)==0){
 	  if (bases!=NULL){
-	    bases_display(s);
+	    struct base_struct * b;
+	    b=bases_search_on_id(0);
+	    base_display(s, b);
 	  }
+	}
+      }
+    } else if (strncmp(commands_get_part(commands, 1), "base", 4)==0){
+      if (strncmp(commands_get_part(commands, 2), "display", 7)==0){
+	if (active_base!=NULL){
+	  base_display(s, active_base);
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
 	}
       }
     }
