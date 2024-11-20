@@ -29,8 +29,13 @@ Commands that now actually work:
    - lists all bases in the system
 3. config display
    - displays the configuration
-4. node search <key> <value>
+4. node add
+   - add a node to the active base
+5. node add attribute <node swid> <key> <value>
+   - adds an attribute to a node
+   - node is searched on the active base
+6. node search <key> <value>
    - search a node based on a key and a value
-5. use <swid>
+7. use <swid>
    - uses <swid> as the active base
    - (the base on which operations are executed)
