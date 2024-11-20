@@ -121,6 +121,37 @@ void * handler(void * sck){
 	  free(tmp_local);
 	}
       } 
+    } else if (commands_count(commands)==6) {
+      if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
+	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
+	  (strncmp(commands_get_part(commands,3), "attribute", 9)==0)){
+	if (active_base!=NULL){
+	  struct node_struct * n;
+	  struct attribute_struct * a;
+	  char * search;
+	  int isearch;
+
+	  search=malloc(strlen(commands_get_part(commands, 4))+1);
+	  bzero(search, strlen(commands_get_part(commands, 4))+1);
+	  search=strncpy(search, commands_get_part(commands, 4),strlen(commands_get_part(commands, 4)));
+
+	  isearch=atoi(search);
+
+	  n=node_search_by_swid(active_base, isearch);
+	  if(n!=NULL) {
+	    a=attribute_new(commands_get_part(commands, 5), commands_get_part(commands,6));
+	    n->attributes=dll_add(n->attributes, a);
+	    node_display(s, n);
+	  }
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+      }
     }
         
     commands=commands_free(commands);
