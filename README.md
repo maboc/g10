@@ -21,6 +21,6 @@ Why then have it on public available github? Well..I needed a place where I can 
 In a lot of writing you may find the term swid. This is a System Wide Identifier. Every item (base/node/relation/attribute) in the system has a unique swid
 
 ## Content
-[Commands](docs/commands.md)
-[Structures](docs/structures.md)
+- [Commands](docs/commands.md)
+- [Structures](docs/structures.md)
 
