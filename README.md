@@ -20,6 +20,9 @@ Why then have it on public available github? Well..I needed a place where I can 
 
 In a lot of writing you may find the term swid. This is a System Wide Identifier. Every item (base/node/relation/attribute) in the system has a unique swid
 
+[Commands](docs/commands.md)
+
+
 ## Commands
 Commands that now actually work:
 1. base display
