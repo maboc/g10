@@ -71,7 +71,7 @@ void * handler(void * sck){
 	isearch=atoi(search);
 
 	active_base=bases_search_on_id(isearch);
-	if(active_base!=NULL) base_list(s, active_base);
+ 	if(active_base!=NULL) base_list(s, active_base);
 	
       } else if (((strncmp(commands_get_part(commands, 1), "node", 4)==0)) && (strncmp(commands_get_part(commands, 2), "add", 3)==0)) {
 	if(active_base!=NULL){
@@ -121,6 +121,46 @@ void * handler(void * sck){
 	  free(tmp_local);
 	}
       } 
+    } else if (commands_count(commands)==5) {
+      if ((strncmp(commands_get_part(commands, 1),"node", 4)==0) &&
+	  (strncmp(commands_get_part(commands, 2), "add", 3)==0) &&
+	  (strncmp(commands_get_part(commands, 3), "relation", 8)==0)){
+	if (active_base!=NULL){
+	  struct node_struct * n1=NULL, * n2=NULL;
+	  struct relation_struct * r;
+	  char * search;
+	  int isearch;
+
+	  search=malloc(strlen(commands_get_part(commands, 4))+1);
+	  bzero(search, strlen(commands_get_part(commands, 4))+1);
+	  search=strncpy(search, commands_get_part(commands, 4), strlen(commands_get_part(commands, 4)));
+
+	  isearch=atoi(search);
+	  n1=node_search_by_swid(active_base, isearch);
+	  free(search);
+	  
+	  search=malloc(strlen(commands_get_part(commands, 5))+1);
+	  bzero(search, strlen(commands_get_part(commands, 5))+1);
+	  search=strncpy(search, commands_get_part(commands, 5), strlen(commands_get_part(commands, 5)));
+
+	  isearch=atoi(search);
+	  n2=node_search_by_swid(active_base, isearch);
+	  free(search);
+	  if((n1!=NULL) && (n2!=NULL)){
+	    r=relation_new(n2);
+	    n1->relations=dll_add(n1->relations, r);
+	    node_display(s, n1);
+	  }
+	  
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+      }
     } else if (commands_count(commands)==6) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
@@ -151,7 +191,7 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
-      }
+      } 
     }
         
     commands=commands_free(commands);
