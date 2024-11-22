@@ -9,6 +9,8 @@ void * listener_start(void * data_in){
   struct sockaddr_in clnt;
   int clnt_ln;
   char * s;
+
+  printf("Starting Listene\n");
   
   sckt = socket(AF_INET, SOCK_STREAM,0);
   if (sckt == -1 ){

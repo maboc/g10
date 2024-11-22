@@ -7,6 +7,8 @@ int main(int argc, char ** argv){
   bases=config_init();
   
   data_load();
+
+  writer_start(NULL);
   
   //base_display(base);
 

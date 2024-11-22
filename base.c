@@ -19,12 +19,16 @@ void base_list(int s, struct base_struct * b){
 
 struct base_struct * base_new(){
   struct base_struct * b;
+  struct control_struct * c;
 
   b=malloc(sizeof(struct base_struct));
   b->swid=swid++;
   b->attributes=NULL;
   b->nodes=NULL;
-
+  c=malloc(sizeof(struct control_struct));
+  c->dirty=1;  // a base is always dirty as it is created
+  b->control=c;
+  
   return b;
 }
 

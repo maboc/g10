@@ -1,5 +1,23 @@
 #include "attribute.h"
 
+struct attribute_struct * attribute_search_by_key(struct dll * list, char * key){
+  struct attribute_struct * a=NULL, * a_tmp=NULL;
+  int n;
+  
+  if (list!=NULL){
+    list=dll_first(list);
+    while (list->next!=NULL){
+      a_tmp=list->payload;
+      if (strncmp(key, a_tmp->key, strlen(key))==0) a=a_tmp;
+      list=list->next;
+    }
+    a_tmp=list->payload;
+    if (strncmp(key, a_tmp->key, strlen(key))==0) a=a_tmp;
+  }
+
+  return a;
+}
+
 void attribute_list(int s, struct attribute_struct * a){
   char * tmp;
   

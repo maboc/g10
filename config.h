@@ -12,6 +12,7 @@
 
 extern struct dll * bases;
 
+int config_get_int(char *);
 struct dll * config_init(void);
 
 #endif

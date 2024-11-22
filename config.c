@@ -1,5 +1,20 @@
 #include "config.h"
 
+int config_get_int(char * key){
+  struct base_struct * config_base;
+  struct node_struct * config_node;
+  struct attribute_struct * attribute;
+  int n=0;
+  
+  config_base=base_search_by_swid(0); //config is always base 0
+  config_node=config_base->nodes->payload; //the config base has only 1 node
+  attribute=attribute_search_by_key(config_node->attributes, key);
+
+  if (attribute!=NULL) n=atoi(attribute->value);
+  
+  return n;
+}
+
 struct dll * config_init(void){
   struct dll * bs;
   struct base_struct * config_base=NULL;

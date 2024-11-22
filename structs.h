@@ -29,6 +29,11 @@ struct base_struct{
   long int swid;
   struct dll * attributes;
   struct dll * nodes;
+  struct control_struct * control;
+};
+
+struct control_struct{
+  int dirty;             //0: clean  1: dirty
 };
 
 #endif
