@@ -17,12 +17,14 @@ struct node_struct{
   long int swid;
   struct dll * attributes;
   struct dll * relations;
+  struct control_struct * control;
 };
 
 struct attribute_struct{
   long int swid;
   char * key;
   char * value;
+  struct control_struct * control;
 };
 
 struct base_struct{

@@ -22,10 +22,15 @@ int node_match_attribute(struct node_struct * node, char * key, char * value){
 struct node_struct * node_new(){
 
   struct node_struct * n;
+  struct control_struct * c;
 
   n=malloc(sizeof(struct node_struct));
   bzero(n, sizeof(struct node_struct));
 
+  c=malloc(sizeof(struct control_struct));
+  c->dirty=1;
+  n->control=c;
+  
   n->swid=swid++;
   n->attributes=NULL;
   n->relations=NULL;
