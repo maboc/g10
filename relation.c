@@ -28,12 +28,18 @@ struct relation_struct * relation_search_by_swid(struct node_struct * n, int i){
 
 struct relation_struct * relation_new(struct node_struct * n){
   struct relation_struct * r;
-
+  struct control_struct * c;
+  
   r=malloc(sizeof(struct relation_struct));
+  c=malloc(sizeof(struct control_struct));
+  r->control=c;
+  c->dirty=1;
+  
   r->swid=swid++;
   r->node_to=n;
   r->attributes=NULL;
 
+  
   return r;
 }
 

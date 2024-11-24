@@ -1,5 +1,55 @@
 #include "writer.h"
 
+void write_relation_attribute(struct base_struct *b, struct node_struct *n, struct relation_struct * r, struct attribute_struct *a){
+  printf("writing relation attribute %i , %i, %i, %i\n", b->swid, n->swid, r->swid, a->swid);
+  a->control->dirty=0;
+}
+
+void process_relation_attributes(struct base_struct * b, struct node_struct * n, struct relation_struct * r) {
+  struct dll * attributes;
+  struct attribute_struct * a;
+  
+  attributes=r->attributes;
+
+  if(attributes!=NULL) {
+    attributes=dll_first(attributes);
+    while(attributes->next!=NULL) {
+      a=attributes->payload;
+      if(a->control->dirty==1) write_relation_attribute(b, n, r, a);//also save the base, node and relation this attributes belongs to
+      attributes=attributes->next;
+    }
+    a=attributes->payload;
+    if(a->control->dirty==1) write_relation_attribute(b, n, r, a);//also save the base, node and relation this attributes belongs to
+  }
+}
+
+void write_relation(struct base_struct * b, struct node_struct * n, struct relation_struct * r) {
+  printf("writing relation %i , %i, %i\n", b->swid, n->swid, r->swid);
+  r->control->dirty=0;
+}
+
+void process_relation(struct base_struct * b, struct node_struct * n, struct relation_struct *r) {
+  if (r->control->dirty==1) write_relation(b, n, r);
+  process_relation_attributes(b, n, r);
+}
+
+void process_node_relations(struct base_struct * b, struct node_struct * n) {
+  struct dll * relations;
+  struct relation_struct * r;
+
+  relations=n->relations;
+  if (relations!=NULL){
+    relations=dll_first(relations);
+    while(relations->next!=NULL) {
+      r=relations->payload;
+      process_relation(b, n, r);
+      relations=relations->next;	
+    }
+    r=relations->payload;
+    process_relation(b, n, r);    
+  }
+}
+
 void write_node_attribute(struct base_struct * b, struct node_struct * n, struct attribute_struct * a) {
   printf("Writing node attribute %i , %i , %i\n", b->swid, n->swid, a->swid);
   a->control->dirty=0;
@@ -31,7 +81,8 @@ void write_node(struct base_struct * b, struct node_struct * n) {
 
 void process_node(struct base_struct * b, struct node_struct * n) {
   if (n->control->dirty==1) write_node(b, n);
-  process_node_attributes(b, n);  
+  process_node_attributes(b, n);
+  process_node_relations(b, n);
 }
 
 void process_nodes(struct base_struct * b) {

@@ -11,6 +11,7 @@ struct relation_struct{
   long int swid;
   struct node_struct * node_to;
   struct dll * attributes;
+  struct control_struct * control;
 };
 
 struct node_struct{
