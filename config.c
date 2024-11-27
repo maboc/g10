@@ -23,6 +23,7 @@ struct dll * config_init(void){
   FILE * cfg_file;
   char * cfg_file_name;
   char * config_line;
+  char * key, * value, * tmp;
 
   printf("Configure the system\n");
   
@@ -46,20 +47,32 @@ struct dll * config_init(void){
     bzero(config_line, 200);
     while (fgets(config_line, 200, cfg_file)) {
 
-      printf("%s\n", config_line);
+      tmp=remove_leading_spaces(config_line); //remove all uneccesary characters at the start
+      free (config_line);
+      config_line=tmp;
       
+      tmp=remove_trailing_spaces(config_line); //remove all unneccesary characters at the end
+      free(config_line);
+      config_line=tmp;
+
+      printf("%s\n", config_line);
+      tmp=strstr(config_line, ":");
+      key=malloc(tmp-config_line+1);
+      bzero(key, tmp-config_line+1);
+      key=strncpy(key, config_line, tmp-config_line);
+      value=malloc(strlen(tmp+1)+1);
+      bzero(value, strlen(tmp+1)+1);
+      value=strncpy(value, tmp+1, strlen(tmp+1));
+
+      attr=attribute_new(key, value);
+      config_node->attributes=dll_add(config_node->attributes, attr);
+
+      free(config_line);
+      config_line=malloc(200); // configuration items can't be longer then 200 chars (for now)
+      bzero(config_line, 200);
     }
-
-
     
-    attr=attribute_new("node", "config");
-    config_node->attributes=dll_add(config_node->attributes, attr);
-    attr=attribute_new("data_writer_interval", "3");
-    config_node->attributes=dll_add(config_node->attributes, attr);
-    attr=attribute_new("data_dir", "./");
-    config_node->attributes=dll_add(config_node->attributes, attr);
-
-    
+    fclose(cfg_file);
   } else {
     printf("No config file found (%s)\n", cfg_file_name);
   }

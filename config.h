@@ -9,6 +9,7 @@
 #include "attribute.h"
 #include "node.h"
 #include "base.h"
+#include "parser.h"
 
 extern struct dll * bases;
 
