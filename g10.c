@@ -5,16 +5,17 @@ int main(int argc, char ** argv){
   printf("g10\r\n");
 
   bases=config_init();
-  
-  data_load();
+  if (bases!=NULL){  
+    data_load();
 
-  writer_start(NULL);
+    writer_start(NULL);
   
-  //base_display(base);
+    //base_display(base);
 
-  //  bases_display(s, bases);
+    //  bases_display(s, bases);
 
-  listener_start(NULL);
-  
+    listener_start(NULL);
+
+  }
   return 0;
 }
