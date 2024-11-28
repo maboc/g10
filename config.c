@@ -1,6 +1,25 @@
 #include "config.h"
 
-int config_get_int(char * key){
+char * config_get_char(char * key) {
+  struct base_struct * config_base;
+  struct node_struct * config_node;
+  struct attribute_struct * attribute;
+  char * rc=NULL;
+  
+  config_base=base_search_by_swid(0); //config is always base 0
+  config_node=config_base->nodes->payload; //the config base has only 1 node
+  attribute=attribute_search_by_key(config_node->attributes, key);
+
+  if (attribute!=NULL) {
+    rc=malloc(strlen(attribute->value)+1);
+    bzero(rc, strlen(attribute->value)+1);
+    rc=strncpy(rc, attribute->value, strlen(attribute->value));
+  }
+  
+  return rc;
+}
+
+int config_get_int(char * key) {
   struct base_struct * config_base;
   struct node_struct * config_node;
   struct attribute_struct * attribute;

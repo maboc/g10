@@ -1,5 +1,5 @@
-g10:g10.o dll.o attribute.o attributes.o node.o nodes.o base.o bases.o relation.o relations.o data.o listener.o handler.o output.o parser.o config.o writer.o
-	gcc -ggdb -lpthread -o g10 g10.o dll.o attribute.o attributes.o node.o nodes.o base.o bases.o relation.o relations.o data.o listener.o handler.o output.o parser.o config.o writer.o
+g10:g10.o dll.o attribute.o attributes.o node.o nodes.o base.o bases.o relation.o relations.o data.o listener.o handler.o output.o parser.o config.o writer.o reader.o
+	gcc -ggdb -lpthread -o g10 g10.o dll.o attribute.o attributes.o node.o nodes.o base.o bases.o relation.o relations.o data.o listener.o handler.o output.o parser.o config.o writer.o reader.o
 
 g10.o:g10.c g10.h structs.h
 	gcc -ggdb -c g10.c
@@ -51,6 +51,9 @@ config.o:config.c config.h
 
 writer.o:writer.c writer.h
 	gcc -ggdb -c writer.c
+
+reader.o:reader.c reader.h
+	gcc -ggdb -c reader.c
 
 clean:
 	rm *.o

@@ -6,7 +6,8 @@ int main(int argc, char ** argv){
 
   bases=config_init();
   if (bases!=NULL){  
-    data_load();
+    //   data_load();
+    reader();
 
     writer_start(NULL);
   

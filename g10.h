@@ -11,6 +11,7 @@
 #include "listener.h"
 #include "config.h"
 #include "writer.h"
+#include "reader.h"
 
 long int swid=0; /*System Wide ID*/
 struct dll * bases=NULL;

@@ -142,11 +142,17 @@ void process_bases(struct dll * bs){
   bs=dll_first(bs);
   while(bs->next!=NULL) {
     b=bs->payload;
-    process_base(b);
+    if ((b->swid!=0) && (attribute_exists_by_kv(b->attributes, "name", "files")==0)) { // the config base is not written to datafiles (created at startup from the config (text) file)
+                                                                                       // Also the base with files will not be written to disk
+      process_base(b);
+    } 
     bs=bs->next;
   }
   b=bs->payload;
-  process_base(b);
+  if ((b->swid!=0) && (attribute_exists_by_kv(b->attributes, "name", "files")==0)) { // the config base is not written to datafiles (created at startup from the config (text) file)
+                                                                                     // Also the base with files will not be written to disk
+    process_base(b);
+  } 
 }
 
 void * writer(void * data_in){
