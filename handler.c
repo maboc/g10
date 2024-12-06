@@ -105,6 +105,10 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+      } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) && (strncmp(commands_get_part(commands, 2), "new", 3)==0)){
+	struct base_struct * b;
+	b=base_new(0);
+	bases=dll_add(bases, b);
       }
     } else if (commands_count(commands)==4) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) && (strncmp(commands_get_part(commands,2), "search", 6)==0)){

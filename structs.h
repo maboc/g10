@@ -37,6 +37,8 @@ struct base_struct{
 
 struct control_struct{
   int dirty;             //0: clean  1: dirty
+  char * file;
+  long int position;
 };
 
 #endif

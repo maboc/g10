@@ -6,7 +6,7 @@ void data_load(){
   struct base_struct * base;
   struct relation_struct * r;
 
-  base=base_new();//create a base
+  base=base_new(0);//create a base
     
   attribute=attribute_new("name", "personen");//create an attribute(for the base)
   
@@ -33,7 +33,7 @@ void data_load(){
 
   base->nodes=dll_add(base->nodes, node);//finally add newly created node to the (list of nodes of the) base
 
-  base=base_new();//create another base
+  base=base_new(0);//create another base
   attribute=attribute_new("naam", "recepten");//add dome attributes to it
   base->attributes=dll_add(base->attributes, attribute);
   attribute=attribute_new("gecreeerd", "2024/10/22");

@@ -8,9 +8,12 @@ void bases_read() {
   struct dll * bs;
   struct base_struct * b;
   FILE * fp;
-
+  unsigned long int file_size=0;
   struct node_struct * n;
   struct attribute_struct * a;
+  long int position;
+  char * buffer=NULL;
+  long int base_id;
   
   printf("Reading Bases\n");
 
@@ -30,18 +33,62 @@ void bases_read() {
   fp=fopen(totaal, "r+");
   if (fp!=NULL) {
     printf("Basefile exists : %s\n", totaal);
+
+    //now comes the heavy lifting : reading from the file into bases
+
+    //first determine lenth
+    fseek(fp, 0, SEEK_END);
+    file_size=ftell(fp);
+    for(position=0; position<=file_size-sizeof(long int); position=position+sizeof(long int)){
+      fseek(fp, position, SEEK_SET);
+      fread(&base_id, sizeof(long int), 1, fp);
+      if (base_id!=0){
+	printf("Position : %i Base id %i\n", position, base_id);
+	struct base_struct * b;
+
+	b=base_new(base_id);
+	b->control->file=malloc(strlen(totaal)+1);
+	bzero(b->control->file, strlen(totaal)+1);
+	b->control->file=strncpy(b->control->file, totaal, strlen(totaal));
+	b->control->position=position;
+	bs=dll_add(bs, b);
+      }
+    }
+    fclose(fp);
   } else {
     printf("Create basefile : %s\n", totaal);
-    
-    n=node_new();
-    b=base_search_by_kv("name","files");
-    b->nodes=dll_add(b->nodes, n);
-    a=attribute_new("name", totaal);
-    n->attributes=dll_add(n->attributes, a);
-    a=attribute_new("type", "bases");
-    n->attributes=dll_add(n->attributes, a);
+
+    //create the actual file
+    fp=fopen(totaal, "w+");
+
+    //initialize a buffer to write to the new file
+    buffer=malloc(2048);
+    bzero(buffer, 2048);
+
+    fwrite(buffer, 2048, 1, fp);
+    fflush(fp);
+    fclose(fp);
+
+    file_size=2*1024;
   }
+    
+  // CReate the file in the administration
+  n=node_new();
+  b=base_search_by_kv("name","files");
+  b->nodes=dll_add(b->nodes, n);
+  a=attribute_new("name", totaal);
+  n->attributes=dll_add(n->attributes, a);
+  a=attribute_new("type", "bases");
+  n->attributes=dll_add(n->attributes, a);
+
+  tmp=malloc(100);
+  bzero(tmp, 100);
+
+  sprintf(tmp, "%i", file_size);
+  a=attribute_new("file_size", tmp);
+  n->attributes=dll_add(n->attributes, a);
   
+  free(tmp);  
   free(totaal);
 }
 
@@ -52,7 +99,7 @@ void reader() {
 
   printf("Reading data into g10\n");
   bs=bases;
-  b=base_new();
+  b=base_new(0);
   bs=dll_add(bs, b); //new file bas
   a=attribute_new("name", "files");
   b->attributes=dll_add(b->attributes, a);

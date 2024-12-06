@@ -17,16 +17,27 @@ void base_list(int s, struct base_struct * b){
   attributes_list(s, b->attributes);
 }
 
-struct base_struct * base_new(){
+struct base_struct * base_new(long int bestaande_swid){
   struct base_struct * b;
   struct control_struct * c;
 
   b=malloc(sizeof(struct base_struct));
-  b->swid=swid++;
+  if(bestaande_swid!=0) {
+    b->swid=bestaande_swid;
+    if (b->swid>swid) swid=b->swid;
+  } else {
+    b->swid=swid++;
+  }
   b->attributes=NULL;
   b->nodes=NULL;
   c=malloc(sizeof(struct control_struct));
-  c->dirty=1;  // a base is always dirty as it is created
+  if(bestaande_swid!=0) {
+    c->dirty=0;
+  } else {
+    c->dirty=1;  // a base is always dirty as it is first created
+  }
+  c->file=NULL;
+  c->position=-1;
   b->control=c;
   
   return b;

@@ -53,7 +53,7 @@ struct dll * config_init(void){
   cfg_file=fopen(cfg_file_name, "r"); // For now the configuration is readonly
   if (cfg_file!=NULL){  
 
-    config_base=base_new();
+    config_base=base_new(0);
     attr=attribute_new("name", "config");
     config_base->attributes=dll_add(config_base->attributes, attr);
 
