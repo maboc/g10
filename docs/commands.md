@@ -4,6 +4,8 @@
    - potentially very expensive
 2. bases list
    - lists all bases in the system
+3. base new
+   - creates a new base
 3. config display
    - displays the configuration
 4. node add
