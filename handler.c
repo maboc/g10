@@ -164,6 +164,23 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+      } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) &&
+		 (strncmp(commands_get_part(commands, 2), "add", 3)==0) &&
+		 (strncmp(commands_get_part(commands, 3), "attribute", 9)==0)){
+	if (active_base!=NULL) {
+	  struct attribute_struct * a;
+	  a=attribute_new(commands_get_part(commands, 4), commands_get_part(commands,5));
+	  active_base->attributes=dll_add(active_base->attributes, a);
+	    base_list(s, active_base);
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+	
       }
     } else if (commands_count(commands)==6) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
