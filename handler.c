@@ -169,7 +169,7 @@ void * handler(void * sck){
 		 (strncmp(commands_get_part(commands, 3), "attribute", 9)==0)){
 	if (active_base!=NULL) {
 	  struct attribute_struct * a;
-	  a=attribute_new(commands_get_part(commands, 4), commands_get_part(commands,5));
+	  a=attribute_new(0, commands_get_part(commands, 4), commands_get_part(commands,5));
 	  active_base->attributes=dll_add(active_base->attributes, a);
 	    base_list(s, active_base);
 	} else {
@@ -200,7 +200,7 @@ void * handler(void * sck){
 
 	  n=node_search_by_swid(active_base, isearch);
 	  if(n!=NULL) {
-	    a=attribute_new(commands_get_part(commands, 5), commands_get_part(commands,6));
+	    a=attribute_new(0, commands_get_part(commands, 5), commands_get_part(commands,6));
 	    n->attributes=dll_add(n->attributes, a);
 	    node_display(s, n);
 	  }
@@ -240,7 +240,7 @@ void * handler(void * sck){
 	    free(search);
 	    r=relation_search_by_swid(n, isearch);
 	    if (r!=NULL){
-	      a=attribute_new(commands_get_part(commands, 6), commands_get_part(commands, 7));
+	      a=attribute_new(0, commands_get_part(commands, 6), commands_get_part(commands, 7));
 	      r->attributes=dll_add(r->attributes, a);
 	      node_display(s, n);	   
 	    }

@@ -47,7 +47,7 @@ void attribute_list(int s, struct attribute_struct * a){
   }
 }
 
-struct attribute_struct * attribute_new(char * key, char * value){
+struct attribute_struct * attribute_new(long int bestaande_swid, char * key, char * value){
   struct attribute_struct * a;
   struct control_struct * c;
 
@@ -55,10 +55,16 @@ struct attribute_struct * attribute_new(char * key, char * value){
   bzero(a, sizeof(struct attribute_struct));
 
   c=malloc(sizeof(struct control_struct));
-  c->dirty=1;
+  if (bestaande_swid!=0) {
+    a->swid=bestaande_swid;
+    if (bestaande_swid> swid) swid=bestaande_swid;
+    c->dirty=0;
+  } else {
+    c->dirty=1;
+    a->swid=swid++;
+  }
 
   a->control=c;
-  a->swid=swid++;
   
   a->key=malloc(strlen(key)+1);
   bzero(a->key, strlen(key)+1);
