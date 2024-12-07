@@ -1,5 +1,35 @@
 #include "reader.h"
 
+char * construct_file_name(char * dir_name, char * file_name) {
+  char * fn, * dn, * totaal, * tmp;
+  fn=config_get_char(file_name);
+  dn=config_get_char(dir_name);
+
+  totaal=malloc(strlen(fn)+strlen(dn)+1);
+  bzero(totaal, strlen(fn)+strlen(dn)+1);
+  strncpy(totaal, dn, strlen(dn));
+  tmp=totaal+strlen(dn);
+  tmp=strncpy(tmp, fn, strlen(fn));
+
+  free(fn);
+  free(dn);
+  
+  return totaal;
+}
+
+void bases_attributes_read(){
+  struct dll * bs;
+  char * file_name;
+  
+  printf("Reading bases attributes\n");
+
+  bs=bases;
+
+  file_name=construct_file_name("data_dir", "base_attribute_file");
+  printf("Base attribute file : %s\n", file_name);
+  
+}
+
 void bases_read() {
   char * file_name;
   char * dir_name;
@@ -18,16 +48,9 @@ void bases_read() {
   printf("Reading Bases\n");
 
   bs=bases;
+
+  totaal=construct_file_name("data_dir","base_file");
   
-  file_name=config_get_char("base_file");
-  dir_name=config_get_char("data_dir");
-
-  totaal=malloc(strlen(file_name)+strlen(dir_name)+1);
-  bzero(totaal, strlen(file_name)+strlen(dir_name)+1);
-  strncpy(totaal, dir_name, strlen(dir_name));
-  tmp=totaal+strlen(dir_name);
-  tmp=strncpy(tmp, file_name, strlen(file_name));
-
   printf("Base file : %s\n", totaal);
 
   fp=fopen(totaal, "r+");
@@ -105,4 +128,5 @@ void reader() {
   b->attributes=dll_add(b->attributes, a);
   
   bases_read();
+  bases_attributes_read();
 }

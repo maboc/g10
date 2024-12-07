@@ -11,6 +11,8 @@
 
 extern struct dll * bases;
 
+char * construct_file_name(char *, char *);
+void bases_attributes_read();
 void bases_read();
 void reader();
 
