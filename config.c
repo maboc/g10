@@ -54,7 +54,7 @@ struct dll * config_init(void){
   if (cfg_file!=NULL){  
 
     config_base=base_new(0);
-    attr=attribute_new("name", "config");
+    attr=attribute_new(0, "name", "config");
     config_base->attributes=dll_add(config_base->attributes, attr);
 
     bs=dll_add(bs, config_base);
@@ -83,7 +83,7 @@ struct dll * config_init(void){
       bzero(value, strlen(tmp+1)+1);
       value=strncpy(value, tmp+1, strlen(tmp+1));
 
-      attr=attribute_new(key, value);
+      attr=attribute_new(0, key, value);
       config_node->attributes=dll_add(config_node->attributes, attr);
 
       free(config_line);

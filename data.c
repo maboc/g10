@@ -8,35 +8,35 @@ void data_load(){
 
   base=base_new(0);//create a base
     
-  attribute=attribute_new("name", "personen");//create an attribute(for the base)
+  attribute=attribute_new(0, "name", "personen");//create an attribute(for the base)
   
   base->attributes=dll_add(base->attributes, attribute);//add the attribute to the (list of attributes of the) base
   bases=dll_add(bases, base);//add the base to the list of bases 
 
   node=node_new(); //create a node
-  attribute=attribute_new("voornaam", "martijn");//create an attribute (for the node)
+  attribute=attribute_new(0, "voornaam", "martijn");//create an attribute (for the node)
   node->attributes=dll_add(node->attributes, attribute);//add the attribute to the (list of attributes of the) node
-  attribute=attribute_new("achternaam", "bos");
+  attribute=attribute_new(0, "achternaam", "bos");
   node->attributes=dll_add(node->attributes, attribute);
   
   base->nodes=dll_add(base->nodes, node);//finally add newly created node to the (list of nodes of the) base
   
   node=node_new(); //create a node
-  attribute=attribute_new("voornaam", "marlies");//create an attribute (for the node)
+  attribute=attribute_new(0, "voornaam", "marlies");//create an attribute (for the node)
   node->attributes=dll_add(node->attributes, attribute);//add the attribute to the (list of attributes of the) node
-  attribute=attribute_new("achternaam", "kamp");
+  attribute=attribute_new(0, "achternaam", "kamp");
   node->attributes=dll_add(node->attributes, attribute);
-  attribute=attribute_new("geslacht", "vrouwlijk");//create an attribute (for the node)
+  attribute=attribute_new(0, "geslacht", "vrouwlijk");//create an attribute (for the node)
   node->attributes=dll_add(node->attributes, attribute);//add the attribute to the (list of attributes of the) node
-  attribute=attribute_new("geboorte datum", "1974/06/18");//create an attribute (for the node)
+  attribute=attribute_new(0, "geboorte datum", "1974/06/18");//create an attribute (for the node)
   node->attributes=dll_add(node->attributes, attribute);//add the attribute to the (list of attributes of the) node
 
   base->nodes=dll_add(base->nodes, node);//finally add newly created node to the (list of nodes of the) base
 
   base=base_new(0);//create another base
-  attribute=attribute_new("naam", "recepten");//add dome attributes to it
+  attribute=attribute_new(0, "naam", "recepten");//add dome attributes to it
   base->attributes=dll_add(base->attributes, attribute);
-  attribute=attribute_new("gecreeerd", "2024/10/22");
+  attribute=attribute_new(0, "gecreeerd", "2024/10/22");
   base->attributes=dll_add(base->attributes, attribute);
 
   bases=dll_add(bases, base);//add the base to the list of bases

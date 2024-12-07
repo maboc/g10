@@ -12,9 +12,9 @@ void file_in_administration(char * file_name, char * file_type) {
   n=node_new();
   b=base_search_by_kv("name","files");
   b->nodes=dll_add(b->nodes, n);
-  a=attribute_new("name", file_name);
+  a=attribute_new(0, "name", file_name);
   n->attributes=dll_add(n->attributes, a);
-  a=attribute_new("type", file_type);
+  a=attribute_new(0, "type", file_type);
   n->attributes=dll_add(n->attributes, a);
 
   fp=fopen(file_name, "r");
@@ -26,7 +26,7 @@ void file_in_administration(char * file_name, char * file_type) {
   bzero(tmp, 100);
 
   sprintf(tmp, "%i", file_size);
-  a=attribute_new("file_size", tmp);
+  a=attribute_new(0, "file_size", tmp);
   n->attributes=dll_add(n->attributes, a);
 
   free(tmp);
@@ -73,6 +73,15 @@ void bases_attributes_read(){
   struct dll * bs;
   char * file_name;
   FILE * fp;
+  long int tmp_id;
+  long int tmp_base_id;
+  char * tmp_k, * tmp_v;
+  long int file_size;
+  long int max_attribute_size;
+  struct attribute_struct * attribute;
+  struct base_struct * base;
+  long int len;
+  long int position;
   
   printf("Reading bases attributes\n");
 
@@ -87,7 +96,39 @@ void bases_attributes_read(){
     //the file exists
 
     max_attribute_size=config_get_int("max_attribute_size");
-     
+    //determine the file_size
+    // ahum...daar is een veld in de controlstructure voor
+    fseek(fp, 0, SEEK_END);
+    file_size=ftell(fp);
+    position=0;
+    while (position+max_attribute_size<file_size) {
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_id, sizeof(long int), 1, fp);
+      if (tmp_id!=0) {
+	fread(&tmp_base_id, sizeof(long int), 1, fp);
+	fread(&len, sizeof(long int), 1, fp);
+	tmp_k=malloc(len+1);
+	bzero(tmp_k, len+1);
+	fread(tmp_k, len, 1, fp);
+	fread(&len, sizeof(long int), 1, fp);
+	tmp_v=malloc(len+1);
+	bzero(tmp_v, len+1);
+	fread(tmp_v, len, 1,fp);
+
+	attribute=attribute_new(tmp_id, tmp_k, tmp_v);
+	base=base_search_by_swid(tmp_base_id);
+	base->attributes=dll_add(base->attributes, attribute);
+	attribute->control->file=malloc(strlen(file_name)+1);
+	bzero(attribute->control->file, strlen(file_name)+1);
+	attribute->control->file=strncpy(attribute->control->file, file_name, strlen(file_name));
+	attribute->control->position=position;
+	attribute->control->dirty=0;
+
+      }
+      position=position+max_attribute_size;
+    }
+    fclose(fp);
+    
   } else {
     //the file does not exist ..create it
     create_file(file_name);
@@ -119,12 +160,12 @@ void bases_read() {
   if (fp!=NULL) {
     printf("Basefile exists : %s\n", totaal);
 
-     //now comes the heavy lifting : reading from the file into bases
+    //now comes the heavy lifting : reading from the file into bases
 
     //first determine lenth
     fseek(fp, 0, SEEK_END);
     file_size=ftell(fp);
-      for(position=0; position<=file_size-sizeof(long int); position=position+sizeof(long int)){
+    for(position=0; position<=file_size-sizeof(long int); position=position+sizeof(long int)){
       fseek(fp, position, SEEK_SET);
       fread(&base_id, sizeof(long int), 1, fp);
       if (base_id!=0){
@@ -160,7 +201,7 @@ void reader() {
   bs=bases;
   b=base_new(0);
   bs=dll_add(bs, b); //new file bas
-  a=attribute_new("name", "files");
+  a=attribute_new(0,"name", "files");
   b->attributes=dll_add(b->attributes, a);
   
   bases_read();
