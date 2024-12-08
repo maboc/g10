@@ -75,6 +75,7 @@ struct node_struct * node_new(long int bestaande_swid){
   } else {
     n->swid=bestaande_swid;
     c->dirty=1;
+    if (bestaande_swid>swid) swid=bestaande_swid;
   }
   n->attributes=NULL;
   n->relations=NULL;
