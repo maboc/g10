@@ -76,7 +76,7 @@ void * handler(void * sck){
       } else if (((strncmp(commands_get_part(commands, 1), "node", 4)==0)) && (strncmp(commands_get_part(commands, 2), "add", 3)==0)) {
 	if(active_base!=NULL){
 	  struct node_struct * n=NULL;
-	  n=node_new();
+	  n=node_new(0);
 	  active_base->nodes=dll_add(active_base->nodes, n);
 	  node_display(s, n);
 	    

@@ -59,7 +59,7 @@ struct dll * config_init(void){
 
     bs=dll_add(bs, config_base);
   
-    config_node=node_new();
+    config_node=node_new(0);
     config_base->nodes=dll_add(config_base->nodes, config_node);
 
     config_line=malloc(200); // configuration items can't be longer then 200 chars (for now)
