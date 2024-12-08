@@ -13,7 +13,7 @@ void data_load(){
   base->attributes=dll_add(base->attributes, attribute);//add the attribute to the (list of attributes of the) base
   bases=dll_add(bases, base);//add the base to the list of bases 
 
-  node=node_new(); //create a node
+  node=node_new(0); //create a node
   attribute=attribute_new(0, "voornaam", "martijn");//create an attribute (for the node)
   node->attributes=dll_add(node->attributes, attribute);//add the attribute to the (list of attributes of the) node
   attribute=attribute_new(0, "achternaam", "bos");
@@ -21,7 +21,7 @@ void data_load(){
   
   base->nodes=dll_add(base->nodes, node);//finally add newly created node to the (list of nodes of the) base
   
-  node=node_new(); //create a node
+  node=node_new(0); //create a node
   attribute=attribute_new(0, "voornaam", "marlies");//create an attribute (for the node)
   node->attributes=dll_add(node->attributes, attribute);//add the attribute to the (list of attributes of the) node
   attribute=attribute_new(0, "achternaam", "kamp");

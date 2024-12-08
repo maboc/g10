@@ -56,7 +56,7 @@ int node_match_attribute(struct node_struct * node, char * key, char * value){
   return result;
 }
 
-struct node_struct * node_new(){
+struct node_struct * node_new(long int bestaande_swid){
 
   struct node_struct * n;
   struct control_struct * c;
@@ -65,12 +65,18 @@ struct node_struct * node_new(){
   bzero(n, sizeof(struct node_struct));
 
   c=malloc(sizeof(struct control_struct));
-  c->dirty=1;
   c->file=NULL;
   c->position=-1;
   n->control=c;
-  
-  n->swid=swid++;
+
+  if (bestaande_swid==0) {
+    n->swid=swid++;
+    c->dirty=1;
+  } else {
+    n->swid=bestaande_swid;
+    c->dirty=1;
+    if (bestaande_swid>swid) swid=bestaande_swid;
+  }
   n->attributes=NULL;
   n->relations=NULL;
 

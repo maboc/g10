@@ -73,10 +73,68 @@ void process_node_attributes(struct base_struct * b, struct node_struct * n) {
   }
 }
 
-void write_node(struct base_struct * b, struct node_struct * n) {
-  printf("writing node %i , %i\n", b->swid, n->swid);
-  n->control->dirty=0;
+void write_node(struct base_struct * base, struct node_struct * node) {
+  struct base_struct * file_base;
+  struct dll * list;
+  struct node_struct * n;
+  struct attribute_struct * a;
+  long int tmp_swid;
+  long int tmp_base_swid;
+  FILE * fp;
+  long int position;
+  int written=0;
   
+  printf("writing node %i, %i\n", base->swid, node->swid);
+
+  if(node->control->file==NULL) {
+    //never written before
+    //so which file is for base_attributes
+    file_base=base_search_by_kv("name","files");
+    list=node_search_by_kv(file_base->nodes, "type", "nodes");
+    // for now there is always 1 and only 1 node for type nodes...so we can get the very first node of this list
+    n=list->payload;
+    // make the list free
+    free(list); // dit kan alleen omdat er maar 1 entry in zit 
+    a=node_get_attribute(n->attributes, "name");
+
+    //adjust the control struct of the attribute
+    node->control->file=malloc(strlen(a->value)+1);
+    bzero(node->control->file, strlen(a->value)+1);
+    node->control->file=strncpy(node->control->file, a->value, strlen(a->value));
+
+    printf("Writing new node %i\n", node->swid);
+
+    fp=fopen(node->control->file, "r+");
+    position=0;
+    
+    while(written==0) {
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_swid, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+      if(tmp_swid==0) {
+	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	fwrite(&node->swid, sizeof(long int), 1, fp);
+	fwrite(&base->swid, sizeof(long int), 1, fp);
+
+	written=1;
+	node->control->position=position;
+      }
+      
+      position=position+2*sizeof(long int);
+    }
+    fclose(fp);
+  } else {
+    
+    printf("Writing node %i\n", node->swid);
+    
+    fp=fopen(node->control->file, "r+");
+    
+    fseek(fp, node->control->position, SEEK_SET);
+    fwrite(&node->swid, sizeof(long int), 1, fp);
+    fwrite(&base->swid, sizeof(long int), 1, fp);
+        
+    fclose(fp);
+  }
+  node->control->dirty=0;
 }
 
 void process_node(struct base_struct * b, struct node_struct * n) {

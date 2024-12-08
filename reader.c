@@ -9,7 +9,7 @@ void file_in_administration(char * file_name, char * file_type) {
   long int file_size;
   
   // CReate the file in the administration
-  n=node_new();
+  n=node_new(0);
   b=base_search_by_kv("name","files");
   b->nodes=dll_add(b->nodes, n);
   a=attribute_new(0, "name", file_name);
@@ -69,7 +69,58 @@ char * construct_file_name(char * dir_name, char * file_name) {
   return totaal;
 }
 
-void bases_attributes_read(){
+void nodes_read() {
+  struct dll * bs;
+  char * file_name;
+  FILE * fp;
+  long int position;
+  long int tmp_swid;
+  long int tmp_base_swid;
+  long int file_size;
+  struct node_struct * node;
+  struct base_struct * base;
+  
+  printf("Reading nodes\n");
+  bs=bases;
+
+  file_name=construct_file_name("data_dir", "node_file");
+  printf("Base attribute file : %s\n", file_name);
+
+  //Let's go girls
+  fp=fopen(file_name, "r+");
+  if (fp!=NULL) {
+    //the file exists
+    fseek(fp, 0, SEEK_END);
+    file_size=ftell(fp);
+    position=0;
+    while (position+2*sizeof(long int)<file_size) {//2 x long int omdat er een node_swid en een base_sid staan
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_swid, sizeof(long int), 1, fp);
+      if (tmp_swid!=0) {
+	fread(&tmp_base_swid, sizeof(long int), 1, fp);
+
+	node=node_new(tmp_swid);
+	base=base_search_by_swid(tmp_base_swid);
+	base->nodes=dll_add(base->nodes, node);
+	node->control->file=malloc(strlen(file_name)+1);
+	bzero(node->control->file, strlen(file_name)+1);
+	node->control->file=strncpy(node->control->file, file_name, strlen(file_name));
+        node->control->position=position;
+	node->control->dirty=0;
+
+      }
+      position=position+2*sizeof(long int);
+    }
+    fclose(fp);
+
+  } else {
+    create_file(file_name);
+  }
+
+  file_in_administration(file_name, "nodes");
+}
+
+void bases_attributes_read() {
   struct dll * bs;
   char * file_name;
   FILE * fp;
@@ -206,4 +257,5 @@ void reader() {
   
   bases_read();
   bases_attributes_read();
+  nodes_read();
 }
