@@ -10,8 +10,8 @@ extern int goon;
 extern struct dll * bases;
 
 
-void write_relation_attribute(struct base_struct *, struct node_struct *, struct relation_struct *, struct attribute_struct *);
-void process_relation_attributes(struct base_struct *, struct node_struct *, struct relation_struct *);
+
+void process_relation_attribute(struct base_struct *, struct node_struct *, struct relation_struct *, struct attribute_struct *);
 void write_relation(struct base_struct *, struct node_struct *, struct relation_struct *, struct node_struct *);
 void process_relation(struct base_struct *, struct node_struct *, struct relation_struct *);
 void process_node_relations(struct base_struct *, struct node_struct *);

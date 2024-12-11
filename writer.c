@@ -1,7 +1,85 @@
 #include "writer.h"
 
-void write_relation_attribute(struct base_struct *b, struct node_struct *n, struct relation_struct * r, struct attribute_struct *a){
-  printf("writing relation attribute %i , %i, %i, %i\n", b->swid, n->swid, r->swid, a->swid);
+void write_relation_attribute(struct base_struct *b, struct node_struct *n, struct relation_struct * r, struct attribute_struct *a){  
+  struct base_struct * file_base;
+  struct node_struct * file_node;
+  struct attribute_struct * file_attribute;
+  struct dll * list=NULL;
+  
+  FILE * fp;
+  char * file_name;
+  int written=0;
+  long int position=0;
+  char * tmp;
+  long int tmp_id, len;
+  long int max_attribute_size;
+
+  printf("Writing relation attribute : attribute :%i, base:%i ,node:%i ,relation:%i\n", a->swid, b->swid, n->swid, r->swid);
+
+  if(a->control->file==NULL) {
+    //never written before 
+    //so which file is for base_attributes
+    file_base=base_search_by_kv("name","files");
+    list=node_search_by_kv(file_base->nodes, "type", "relationss_attributes");
+    // for now there is always 1 and only 1 node for type relations attributes...so we can get the very first node of this list
+    file_node=list->payload;
+    // make the list free
+    free(list);
+    file_attribute=node_get_attribute(file_node->attributes, "name");
+
+    //adjust the control struct of the attribute
+    a->control->file=malloc(strlen(file_attribute->value)+1);
+    bzero(a->control->file, strlen(file_attribute->value)+1);
+    a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
+
+    printf("Writing _new_ relation attribute %i\n", a->swid);
+    max_attribute_size=config_get_int("max_attribute_size");
+    
+    fp=fopen(a->control->file, "r+");
+    position=0;
+
+    while(written==0) {
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+      if(tmp_id==0) {
+	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	fwrite(&a->swid, sizeof(long int), 1, fp);
+	fwrite(&b->swid, sizeof(long int), 1, fp);
+	fwrite(&n->swid, sizeof(long int), 1, fp);
+	fwrite(&r->swid, sizeof(long int), 1, fp);
+	len=strlen(a->key);
+	fwrite(&len, sizeof(long int), 1, fp);
+	fwrite(a->key, strlen(a->key), 1, fp);
+	len=strlen(a->value);
+	fwrite(&len, sizeof(long int), 1, fp);
+	fwrite(a->value, strlen(a->value), 1, fp);
+
+	written=1;
+	a->control->position=position;
+      }
+      
+      position=position+max_attribute_size;
+    }
+    fclose(fp);
+  } else {
+    
+    printf("Writing relation attribute %i\n", a->swid);
+    fp=fopen(a->control->file, "r+");
+    
+    fseek(fp, a->control->position, SEEK_SET);
+    fwrite(&a->swid, sizeof(long int), 1, fp);
+    fwrite(&b->swid, sizeof(long int), 1, fp);
+    fwrite(&n->swid, sizeof(long int), 1, fp);
+    fwrite(&r->swid, sizeof(long int), 1, fp);
+    len=strlen(a->key);
+    fwrite(&len, sizeof(long int), 1, fp);
+    fwrite(a->key, strlen(a->key), 1, fp);
+    len=strlen(a->value);
+    fwrite(&len, sizeof(long int), 1, fp);
+    fwrite(a->value, strlen(a->value), 1, fp);
+        
+    fclose(fp);
+  }  
   a->control->dirty=0;
 }
 
