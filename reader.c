@@ -36,18 +36,19 @@ void file_in_administration(char * file_name, char * file_type) {
 void create_file(char * file_name) {
   FILE * fp;
   char * buffer;
-  long int file_size;
+  long int max_file_size;
   
   printf("Create file : %s\n", file_name);
 
+  max_file_size=config_get_int("max_file_size");
   //create the actual file
   fp=fopen(file_name, "w+");
 
   //initialize a buffer to write to the new file
-  buffer=malloc(2048);
-  bzero(buffer, 2048);
+  buffer=malloc(max_file_size);
+  bzero(buffer, max_file_size);
   
-  fwrite(buffer, 2048, 1, fp);
+  fwrite(buffer, max_file_size, 1, fp);
   fflush(fp);
   fclose(fp);
 }
@@ -68,6 +69,137 @@ char * construct_file_name(char * dir_name, char * file_name) {
   
   return totaal;
 }
+
+void relations_read() {
+  struct dll * bs;
+  char * file_name;
+  FILE * fp;
+  long int position;
+  long int tmp_relation_swid;
+  long int tmp_base_swid;
+  long int tmp_node_swid;
+  long int tmp_node_to_swid;
+  long int file_size;
+  struct node_struct * node, * node_to;
+  struct base_struct * base;
+  struct relation_struct * relation;
+  
+  printf("Reading relations\n");
+  bs=bases;
+
+  file_name=construct_file_name("data_dir", "relation_file");
+  printf("Relation file : %s\n", file_name);
+
+  //Let's go girls
+  fp=fopen(file_name, "r+");
+  if (fp!=NULL) {
+    //the file exists
+    fseek(fp, 0, SEEK_END);
+    file_size=ftell(fp);
+    position=0;
+    while (position+4*sizeof(long int)<file_size) {//4 x long int omdat er een relation_swid en een base_sid en een node_swid en een node_to_swid  staan
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_relation_swid, sizeof(long int), 1, fp);
+      if (tmp_relation_swid!=0) {
+	fread(&tmp_base_swid, sizeof(long int), 1, fp);
+	fread(&tmp_node_swid, sizeof(long int), 1, fp);
+	fread(&tmp_node_to_swid, sizeof(long int), 1, fp);
+
+	base=base_search_by_swid(tmp_base_swid);
+	node=node_search_by_swid(base, tmp_node_swid);
+	node_to=node_search_by_swid(base, tmp_node_to_swid);
+
+	relation=relation_new(tmp_relation_swid, node_to);
+	node->relations=dll_add(node->relations, relation);
+
+	relation->control->file=malloc(strlen(file_name)+1);
+	bzero(relation->control->file, strlen(file_name)+1);
+	relation->control->file=strncpy(relation->control->file, file_name, strlen(file_name));
+        relation->control->position=position;
+	relation->control->dirty=0;
+      }
+      position=position+4*sizeof(long int);
+    }
+    fclose(fp);
+
+  } else {
+    create_file(file_name);
+  }
+
+  file_in_administration(file_name, "relations");
+}
+
+void nodes_attributes_read() {
+  struct dll * bs;
+  char * file_name;
+  FILE * fp;
+  long int tmp_attribute_swid;
+  long int tmp_base_swid;
+  long int tmp_node_swid;
+  char * tmp_k, * tmp_v;
+  long int file_size;
+  long int max_attribute_size;
+  struct attribute_struct * attribute;
+  struct base_struct * base;
+  struct node_struct * node;
+  long int len;
+  long int position;
+  
+  printf("Reading nodes attributes\n");
+
+  bs=bases;
+
+  file_name=construct_file_name("data_dir", "node_attribute_file");
+  printf("Node attribute file : %s\n", file_name);
+
+  //Let's go girls
+  fp=fopen(file_name, "r+");
+  if (fp!=NULL) {
+    //the file exists
+
+    max_attribute_size=config_get_int("max_attribute_size");
+    //determine the file_size
+    // ahum...daar is een veld in de controlstructure voor
+    fseek(fp, 0, SEEK_END);
+    file_size=ftell(fp);
+    position=0;
+    while (position+max_attribute_size<file_size) {
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_attribute_swid, sizeof(long int), 1, fp);
+      if (tmp_attribute_swid!=0) {
+	fread(&tmp_base_swid, sizeof(long int), 1, fp);
+	fread(&tmp_node_swid, sizeof(long int), 1, fp);
+	fread(&len, sizeof(long int), 1, fp);
+	tmp_k=malloc(len+1);
+	bzero(tmp_k, len+1);
+	fread(tmp_k, len, 1, fp);
+	fread(&len, sizeof(long int), 1, fp);
+	tmp_v=malloc(len+1);
+	bzero(tmp_v, len+1);
+	fread(tmp_v, len, 1,fp);
+
+	attribute=attribute_new(tmp_attribute_swid, tmp_k, tmp_v);
+	base=base_search_by_swid(tmp_base_swid);
+	node=node_search_by_swid(base, tmp_node_swid);
+	node->attributes=dll_add(node->attributes, attribute);
+	attribute->control->file=malloc(strlen(file_name)+1);
+	bzero(attribute->control->file, strlen(file_name)+1);
+	attribute->control->file=strncpy(attribute->control->file, file_name, strlen(file_name));
+	attribute->control->position=position;
+	attribute->control->dirty=0;
+
+      }
+      position=position+max_attribute_size;
+    }
+    fclose(fp);
+    
+  } else {
+    //the file does not exist ..create it
+    create_file(file_name);
+  }
+  file_in_administration(file_name, "nodes_attributes");
+}
+
 
 void nodes_read() {
   struct dll * bs;
@@ -258,4 +390,6 @@ void reader() {
   bases_read();
   bases_attributes_read();
   nodes_read();
+  nodes_attributes_read();
+  relations_read();
 }

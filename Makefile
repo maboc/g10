@@ -58,3 +58,9 @@ reader.o:reader.c reader.h
 clean:
 	rm *.o
 	rm *~
+
+data:
+	rm base.g10
+	rm base_attribute.g10
+	rm node.g10
+	rm node_attribute.g10

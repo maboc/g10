@@ -151,7 +151,7 @@ void * handler(void * sck){
 	  n2=node_search_by_swid(active_base, isearch);
 	  free(search);
 	  if((n1!=NULL) && (n2!=NULL)){
-	    r=relation_new(n2);
+	    r=relation_new(0, n2);
 	    n1->relations=dll_add(n1->relations, r);
 	    node_display(s, n1);
 	  }

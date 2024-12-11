@@ -26,19 +26,24 @@ struct relation_struct * relation_search_by_swid(struct node_struct * n, int i){
   return r;
 }
 
-struct relation_struct * relation_new(struct node_struct * n){
+struct relation_struct * relation_new(long int bestaande_swid, struct node_struct * n){
   struct relation_struct * r;
   struct control_struct * c;
   
   r=malloc(sizeof(struct relation_struct));
   c=malloc(sizeof(struct control_struct));
   r->control=c;
-  c->dirty=1;
+  if (bestaande_swid!=0) {
+    c->dirty=0;
+    r->swid=bestaande_swid;
+    if ( bestaande_swid>swid) swid=bestaande_swid;
+  } else {
+    c->dirty=1;
+    r->swid=swid++;
+  }
   
-  r->swid=swid++;
   r->node_to=n;
   r->attributes=NULL;
-
   
   return r;
 }
