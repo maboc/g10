@@ -23,13 +23,79 @@ void process_relation_attributes(struct base_struct * b, struct node_struct * n,
   }
 }
 
-void write_relation(struct base_struct * b, struct node_struct * n, struct relation_struct * r) {
-  printf("writing relation %i , %i, %i\n", b->swid, n->swid, r->swid);
+void write_relation(struct base_struct * b, struct node_struct * n, struct relation_struct * r, struct node_struct * n_t) {
+  /*******/
+  struct base_struct * file_base;
+  struct dll * list;
+  struct node_struct * file_node;
+  struct relation_struct * relation;
+  struct attribute_struct * file_attribute;
+  FILE * fp;
+  long int position;
+  int written=0;
+  long int tmp_relation_swid;
+  
+
+  printf("writing relation %i , %i, %i, %i\n", b->swid, n->swid, r->swid, n_t->swid);
+  
+  if (r->control->file==NULL) {
+    //never written before
+    //so which file is for base_attributes
+    file_base=base_search_by_kv("name","files");
+    list=node_search_by_kv(file_base->nodes, "type", "relations");
+    // for now there is always 1 and only 1 node for type relations...so we can get the very first node of this list
+    file_node=list->payload;
+    // make the list free
+    free(list); // dit kan alleen omdat er maar 1 entry in zit 
+    file_attribute=node_get_attribute(file_node->attributes, "name");
+
+    //adjust the control struct of the attribute
+    r->control->file=malloc(strlen(file_attribute->value)+1);
+    bzero(r->control->file, strlen(file_attribute->value)+1);
+    r->control->file=strncpy(r->control->file, file_attribute->value, strlen(file_attribute->value));
+
+    printf("Writing new relation %i\n", r->swid);
+
+    fp=fopen(r->control->file, "r+");
+    position=0;
+    
+    while(written==0) {
+      fseek(fp, position, SEEK_SET);
+      fread(&tmp_relation_swid, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+      if(tmp_relation_swid==0) {
+	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	fwrite(&r->swid, sizeof(long int), 1, fp);
+	fwrite(&b->swid, sizeof(long int), 1, fp);
+	fwrite(&n->swid, sizeof(long int), 1, fp);
+	fwrite(&n_t->swid, sizeof(long int), 1, fp);
+
+	written=1;
+	r->control->position=position;
+      }
+      
+      position=position+4*sizeof(long int);  //4 * long int : relation_swid, base_swid, node_swid, node_to_swid
+    }
+    fclose(fp);
+  } else {
+    
+    printf("Writing relation %i\n", r->swid);
+    
+    fp=fopen(r->control->file, "r+");
+    
+    fseek(fp, r->control->position, SEEK_SET);
+    fwrite(&r->swid, sizeof(long int), 1, fp);
+    fwrite(&b->swid, sizeof(long int), 1, fp);
+    fwrite(&n->swid, sizeof(long int), 1, fp);
+    fwrite(&n_t->swid, sizeof(long int), 1, fp);
+        
+    fclose(fp);
+  }
   r->control->dirty=0;
 }
 
+
 void process_relation(struct base_struct * b, struct node_struct * n, struct relation_struct *r) {
-  if (r->control->dirty==1) write_relation(b, n, r);
+  if (r->control->dirty==1) write_relation(b, n, r, r->node_to);
   process_relation_attributes(b, n, r);
 }
 
