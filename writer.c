@@ -20,7 +20,7 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
     //never written before 
     //so which file is for base_attributes
     file_base=base_search_by_kv("name","files");
-    list=node_search_by_kv(file_base->nodes, "type", "relationss_attributes");
+    list=node_search_by_kv(file_base->nodes, "type", "relations_attributes");
     // for now there is always 1 and only 1 node for type relations attributes...so we can get the very first node of this list
     file_node=list->payload;
     // make the list free

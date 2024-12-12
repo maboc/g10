@@ -70,7 +70,6 @@ char * construct_file_name(char * dir_name, char * file_name) {
   return totaal;
 }
 
-/********/
 void relations_attributes_read() {
   struct dll * bs;
   char * file_name;
@@ -146,11 +145,8 @@ void relations_attributes_read() {
     //the file does not exist ..create it
     create_file(file_name);
   }
-  file_in_administration(file_name, "nodes_attributes");
+  file_in_administration(file_name, "relations_attributes");
 }
-/********/
-
-
 
 void relations_read() {
   struct dll * bs;
