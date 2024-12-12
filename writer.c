@@ -14,7 +14,7 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
   long int tmp_id, len;
   long int max_attribute_size;
 
-  printf("Writing relation attribute : attribute :%i, base:%i ,node:%i ,relation:%i\n", a->swid, b->swid, n->swid, r->swid);
+  printf("Writing relation attribute : attribute :%i, base:%i, node:%i, relation:%i\n", a->swid, b->swid, n->swid, r->swid);
 
   if(a->control->file==NULL) {
     //never written before 
@@ -32,7 +32,7 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
     bzero(a->control->file, strlen(file_attribute->value)+1);
     a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
 
-    printf("Writing _new_ relation attribute %i\n", a->swid);
+    printf("Writing _new_ relation attribute : %i\n", a->swid);
     max_attribute_size=config_get_int("max_attribute_size");
     
     fp=fopen(a->control->file, "r+");
@@ -63,7 +63,7 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
     fclose(fp);
   } else {
     
-    printf("Writing relation attribute %i\n", a->swid);
+    printf("Writing _existing_relation attribute %i\n", a->swid);
     fp=fopen(a->control->file, "r+");
     
     fseek(fp, a->control->position, SEEK_SET);
@@ -114,7 +114,7 @@ void write_relation(struct base_struct * b, struct node_struct * n, struct relat
   long int tmp_relation_swid;
   
 
-  printf("writing relation %i , %i, %i, %i\n", b->swid, n->swid, r->swid, n_t->swid);
+  printf("writing relation: relation :%i, node :%i, relation :%i, node_to :%i\n", b->swid, n->swid, r->swid, n_t->swid);
   
   if (r->control->file==NULL) {
     //never written before
@@ -132,7 +132,7 @@ void write_relation(struct base_struct * b, struct node_struct * n, struct relat
     bzero(r->control->file, strlen(file_attribute->value)+1);
     r->control->file=strncpy(r->control->file, file_attribute->value, strlen(file_attribute->value));
 
-    printf("Writing new relation %i\n", r->swid);
+    printf("Writing _new_ relation %i\n", r->swid);
 
     fp=fopen(r->control->file, "r+");
     position=0;
@@ -156,7 +156,7 @@ void write_relation(struct base_struct * b, struct node_struct * n, struct relat
     fclose(fp);
   } else {
     
-    printf("Writing relation %i\n", r->swid);
+    printf("Writing _existing_ relation :%i\n", r->swid);
     
     fp=fopen(r->control->file, "r+");
     
@@ -195,8 +195,6 @@ void process_node_relations(struct base_struct * b, struct node_struct * n) {
 }
 
 void write_node_attribute(struct base_struct * b, struct node_struct * n, struct attribute_struct * a) {
-  printf("Writing node attribute %i , %i , %i\n", b->swid, n->swid, a->swid);
-
   struct base_struct * file_base;
   struct node_struct * file_node;
   struct attribute_struct * file_attribute;
@@ -210,7 +208,7 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
   long int tmp_id, len;
   long int max_attribute_size;
   
-  printf("Writing node attribute %i , %i, %i\n", b->swid, n->swid, a->swid);
+  printf("Writing node attribute : attribute :%i, base :%i, node %i\n", a->swid, b->swid, n->swid);  
 
   if(a->control->file==NULL) {
     //never written before
@@ -228,7 +226,7 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
     bzero(a->control->file, strlen(file_attribute->value)+1);
     a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
 
-    printf("Writing new node_attribute %i\n", a->swid);
+    printf("Writing _new_ node_attribute :%i\n", a->swid);
     max_attribute_size=config_get_int("max_attribute_size");
     
     fp=fopen(a->control->file, "r+");
@@ -258,7 +256,7 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
     fclose(fp);
   } else {
     
-    printf("Writing node attribute %i\n", a->swid);
+    printf("Writing _exisiting_ node attribute :%i\n", a->swid);
     fp=fopen(a->control->file, "r+");
     
     fseek(fp, a->control->position, SEEK_SET);
@@ -306,7 +304,7 @@ void write_node(struct base_struct * base, struct node_struct * node) {
   long int position;
   int written=0;
   
-  printf("writing node %i, %i\n", base->swid, node->swid);
+  printf("writing node: node :%i, base :%i\n", node->swid, base->swid);
 
   if(node->control->file==NULL) {
     //never written before
@@ -324,7 +322,7 @@ void write_node(struct base_struct * base, struct node_struct * node) {
     bzero(node->control->file, strlen(a->value)+1);
     node->control->file=strncpy(node->control->file, a->value, strlen(a->value));
 
-    printf("Writing new node %i\n", node->swid);
+    printf("Writing _new_ node :%i\n", node->swid);
 
     fp=fopen(node->control->file, "r+");
     position=0;
@@ -346,7 +344,7 @@ void write_node(struct base_struct * base, struct node_struct * node) {
     fclose(fp);
   } else {
     
-    printf("Writing node %i\n", node->swid);
+    printf("Writing _existing_ node :%i\n", node->swid);
     
     fp=fopen(node->control->file, "r+");
     
@@ -396,7 +394,7 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
   long int tmp_id, len;
   long int max_attribute_size;
   
-  printf("Writing base attribute %i , %i\n", base->swid, attribute->swid);
+  printf("Writing base attribute: attribute :%i , base :%i\n", base->swid, attribute->swid);
 
   if(attribute->control->file==NULL) {
     //never written before
@@ -414,7 +412,7 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
     bzero(attribute->control->file, strlen(a->value)+1);
     attribute->control->file=strncpy(attribute->control->file, a->value, strlen(a->value));
 
-    printf("Writing new base_attribute %i\n", attribute->swid);
+    printf("Writing _new_ base attribute :%i\n", attribute->swid);
     max_attribute_size=config_get_int("max_attribute_size");
     
     fp=fopen(attribute->control->file, "r+");
@@ -443,7 +441,7 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
     fclose(fp);
   } else {
     
-    printf("Writing base attribute %i\n", attribute->swid);
+    printf("Writing _existing_ base attribute :%i\n", attribute->swid);
     fp=fopen(attribute->control->file, "r+");
     
     fseek(fp, attribute->control->position, SEEK_SET);
@@ -508,7 +506,7 @@ void write_base(struct base_struct * b){
     bzero(b->control->file, strlen(a->value)+1);
     b->control->file=strncpy(b->control->file, a->value, strlen(a->value));
 
-    printf("Writing new base %i\n", b->swid);
+    printf("Writing _new_ base :%i\n", b->swid);
     fp=fopen(b->control->file, "r+");
     
     while(written==0) {
@@ -527,7 +525,7 @@ void write_base(struct base_struct * b){
     fclose(fp);
   } else {
     
-    printf("Writing base %i\n", b->swid);
+    printf("Writing _existing_ base :%i\n", b->swid);
     fp=fopen(b->control->file, "r+");
     
     fseek(fp, b->control->position, SEEK_SET);
