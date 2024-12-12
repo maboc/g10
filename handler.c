@@ -116,7 +116,19 @@ void * handler(void * sck){
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "search", 6)==0)) {
 	if (active_base!=NULL) {
-	  results=nodes_search(active_base->nodes, commands_get_part(commands,3), commands_get_part(commands,4));
+	  if (strncmp(commands_get_part(commands, 3), "swid", 4)==0) {
+	    struct node_struct * node=NULL;
+	    long int gezocht=0;
+
+	    results=NULL;
+	    gezocht=atoi(commands_get_part(commands, 4));
+	    node=node_search_by_swid(active_base, gezocht);
+	    if (node!=NULL) {
+	      results=dll_add(results, node);
+	    }
+	  } else {
+	    results=nodes_search(active_base->nodes, commands_get_part(commands,3), commands_get_part(commands,4));
+	  }
 	  if (results!=NULL) nodes_display(s, results);
 	  results=results_free(results);
 	} else {
