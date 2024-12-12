@@ -6,3 +6,4 @@ Following Structures are used in G10
 - [Node](node.md)
 - [Relation](relation.md)
 - [attribute](attribute.md)
+- [control](control.md)

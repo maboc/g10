@@ -76,7 +76,7 @@ void * handler(void * sck){
       } else if (((strncmp(commands_get_part(commands, 1), "node", 4)==0)) && (strncmp(commands_get_part(commands, 2), "add", 3)==0)) {
 	if(active_base!=NULL){
 	  struct node_struct * n=NULL;
-	  n=node_new();
+	  n=node_new(0);
 	  active_base->nodes=dll_add(active_base->nodes, n);
 	  node_display(s, n);
 	    
@@ -105,6 +105,10 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+      } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) && (strncmp(commands_get_part(commands, 2), "new", 3)==0)){
+	struct base_struct * b;
+	b=base_new(0);
+	bases=dll_add(bases, b);
       }
     } else if (commands_count(commands)==4) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) && (strncmp(commands_get_part(commands,2), "search", 6)==0)){
@@ -147,7 +151,7 @@ void * handler(void * sck){
 	  n2=node_search_by_swid(active_base, isearch);
 	  free(search);
 	  if((n1!=NULL) && (n2!=NULL)){
-	    r=relation_new(n2);
+	    r=relation_new(0, n2);
 	    n1->relations=dll_add(n1->relations, r);
 	    node_display(s, n1);
 	  }
@@ -160,6 +164,23 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+      } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) &&
+		 (strncmp(commands_get_part(commands, 2), "add", 3)==0) &&
+		 (strncmp(commands_get_part(commands, 3), "attribute", 9)==0)){
+	if (active_base!=NULL) {
+	  struct attribute_struct * a;
+	  a=attribute_new(0, commands_get_part(commands, 4), commands_get_part(commands,5));
+	  active_base->attributes=dll_add(active_base->attributes, a);
+	    base_list(s, active_base);
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+	
       }
     } else if (commands_count(commands)==6) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
@@ -179,7 +200,7 @@ void * handler(void * sck){
 
 	  n=node_search_by_swid(active_base, isearch);
 	  if(n!=NULL) {
-	    a=attribute_new(commands_get_part(commands, 5), commands_get_part(commands,6));
+	    a=attribute_new(0, commands_get_part(commands, 5), commands_get_part(commands,6));
 	    n->attributes=dll_add(n->attributes, a);
 	    node_display(s, n);
 	  }
@@ -219,7 +240,7 @@ void * handler(void * sck){
 	    free(search);
 	    r=relation_search_by_swid(n, isearch);
 	    if (r!=NULL){
-	      a=attribute_new(commands_get_part(commands, 6), commands_get_part(commands, 7));
+	      a=attribute_new(0, commands_get_part(commands, 6), commands_get_part(commands, 7));
 	      r->attributes=dll_add(r->attributes, a);
 	      node_display(s, n);	   
 	    }

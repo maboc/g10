@@ -9,12 +9,17 @@ void * listener_start(void * data_in){
   struct sockaddr_in clnt;
   int clnt_ln;
   char * s;
+  int option;
+
+  printf("Starting Listene\n");
   
   sckt = socket(AF_INET, SOCK_STREAM,0);
   if (sckt == -1 ){
     printf("problems creating listening socket\r\n");
   } else {
     printf("Listening socket created\n");
+    setsockopt(sckt, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
+    
     
     remote.sin_family = AF_INET; /* Internet address family */
     remote.sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
@@ -37,7 +42,7 @@ void * listener_start(void * data_in){
 	/* if an connection arrives ....accept it */
 	sck = accept(sckt, (struct sockaddr *) &clnt, (socklen_t*)&clnt_ln);
 	/* sck is a file desciptor */
-	
+
 	s=malloc(100);
 	sprintf(s, "Accepted a connection on socket %i\r\n", sck);
 	printf("%s\r\n", s);

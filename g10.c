@@ -5,14 +5,19 @@ int main(int argc, char ** argv){
   printf("g10\r\n");
 
   bases=config_init();
-  
-  data_load();
-  
-  //base_display(base);
+  if (bases!=NULL){  
 
-  //  bases_display(s, bases);
+    //   data_load();
+    reader();
 
-  listener_start(NULL);
+    writer_start(NULL);
   
+    //base_display(base);
+
+    //  bases_display(s, bases);
+
+    listener_start(NULL);
+
+  }
   return 0;
 }

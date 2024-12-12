@@ -17,14 +17,29 @@ void base_list(int s, struct base_struct * b){
   attributes_list(s, b->attributes);
 }
 
-struct base_struct * base_new(){
+struct base_struct * base_new(long int bestaande_swid){
   struct base_struct * b;
+  struct control_struct * c;
 
   b=malloc(sizeof(struct base_struct));
-  b->swid=swid++;
+  if(bestaande_swid!=0) {
+    b->swid=bestaande_swid;
+    if (b->swid>swid) swid=b->swid;
+  } else {
+    b->swid=swid++;
+  }
   b->attributes=NULL;
   b->nodes=NULL;
-
+  c=malloc(sizeof(struct control_struct));
+  if(bestaande_swid!=0) {
+    c->dirty=0;
+  } else {
+    c->dirty=1;  // a base is always dirty as it is first created
+  }
+  c->file=NULL;
+  c->position=-1;
+  b->control=c;
+  
   return b;
 }
 
@@ -69,4 +84,30 @@ struct base_struct * base_search_by_swid(long int swid){
       b=tmp;
   }
   return b;
+}
+
+struct base_struct * base_search_by_kv(char * key, char * value){
+  struct base_struct * tmp, * tmp2;
+  struct base_struct * b=NULL;
+  struct dll * bs;
+  int gevonden=0;
+
+  bs=bases;
+  
+  if (bs!=NULL){
+    bs=dll_first(bs);
+    while(bs->next!=NULL && gevonden==0) {
+      tmp=bs->payload;
+      if (attribute_exists_by_kv(tmp->attributes, "name", "files")==1) {
+	gevonden=1;
+	b=tmp;
+      }
+      
+      bs=bs->next;
+    }
+    tmp=bs->payload; 
+    if (attribute_exists_by_kv(tmp->attributes, "name", "files")==1) b=tmp;
+  }
+  return b;
+  
 }
