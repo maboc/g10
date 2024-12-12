@@ -48,7 +48,7 @@ void * handler(void * sck){
     read(s, inpbuf,1000);
 
     commands=parse(inpbuf);
-
+    /********************************************************************************** 1 part commands */
     if (commands_count(commands)==1) {
       if (strncmp(commands_get_part(commands,1), "quit", strlen("quit"))==0){
 	proceed=1;
@@ -57,6 +57,7 @@ void * handler(void * sck){
 	proceed=1;
 	goon=1;
       }
+      /********************************************************************************** 2 part commands */
     } else if (commands_count(commands)==2) {
       if ((strncmp(commands_get_part(commands,1), "bases", 5)==0) && (strncmp(commands_get_part(commands,2), "list", 4)==0)){
 	bases_list(s);
@@ -110,8 +111,10 @@ void * handler(void * sck){
 	b=base_new(0);
 	bases=dll_add(bases, b);
       }
+      /********************************************************************************** 4 part commands */
     } else if (commands_count(commands)==4) {
-      if ((strncmp(commands_get_part(commands,1), "node", 4)==0) && (strncmp(commands_get_part(commands,2), "search", 6)==0)){
+      if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
+	  (strncmp(commands_get_part(commands,2), "search", 6)==0)) {
 	if (active_base!=NULL) {
 	  results=nodes_search(active_base->nodes, commands_get_part(commands,3), commands_get_part(commands,4));
 	  if (results!=NULL) nodes_display(s, results);
@@ -124,7 +127,8 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
-      } 
+      }
+      /********************************************************************************** 5 part commands */
     } else if (commands_count(commands)==5) {
       if ((strncmp(commands_get_part(commands, 1),"node", 4)==0) &&
 	  (strncmp(commands_get_part(commands, 2), "add", 3)==0) &&
@@ -182,6 +186,7 @@ void * handler(void * sck){
 	}
 	
       }
+      /********************************************************************************** 6 part commands */
     } else if (commands_count(commands)==6) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
@@ -199,7 +204,7 @@ void * handler(void * sck){
 	  isearch=atoi(search);
 
 	  n=node_search_by_swid(active_base, isearch);
-	  if(n!=NULL) {
+	  if(n!=NULL) { 
 	    a=attribute_new(0, commands_get_part(commands, 5), commands_get_part(commands,6));
 	    n->attributes=dll_add(n->attributes, a);
 	    node_display(s, n);
@@ -213,6 +218,7 @@ void * handler(void * sck){
 	  free(tmp_local);
 	}
       }
+      /********************************************************************************** 7 part commands */
     } else if (commands_count(commands)==7){
       if ((strncmp(commands_get_part(commands,1), "relation", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
