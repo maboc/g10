@@ -37,9 +37,14 @@ void create_file(char * file_name) {
   FILE * fp;
   char * buffer;
   long int max_file_size;
-  
-  printf("Create file : %s\n", file_name);
 
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp,"Create file : %s", file_name);
+  logger(tmp);
+  free(tmp);
+  
   max_file_size=config_get_int("max_file_size");
   //create the actual file
   fp=fopen(file_name, "w+");
@@ -88,13 +93,19 @@ void relations_attributes_read() {
   long int len;
   long int position;
   
-  printf("Reading relations attributes\n");
+  logger("Reading relations attributes\n");
 
   bs=bases;
 
   file_name=construct_file_name("data_dir", "relation_attribute_file");
-  printf("Relation attribute file : %s\n", file_name);
 
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Relation attribute file : %s", file_name);
+  logger(tmp);
+  free(tmp);
+  
   //Let's go girls
   fp=fopen(file_name, "r+");
   if (fp!=NULL) {
@@ -162,12 +173,17 @@ void relations_read() {
   struct base_struct * base;
   struct relation_struct * relation;
   
-  printf("Reading relations\n");
+  logger("Reading relations");
   bs=bases;
 
   file_name=construct_file_name("data_dir", "relation_file");
-  printf("Relation file : %s\n", file_name);
-
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp,"Relation file : %s", file_name);
+  logger(tmp);
+  free(tmp);
+  
   //Let's go girls
   fp=fopen(file_name, "r+");
   if (fp!=NULL) {
@@ -223,12 +239,17 @@ void nodes_attributes_read() {
   long int len;
   long int position;
   
-  printf("Reading nodes attributes\n");
+  logger("Reading nodes attributes");
 
   bs=bases;
 
   file_name=construct_file_name("data_dir", "node_attribute_file");
-  printf("Node attribute file : %s\n", file_name);
+
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp,"Node attribute file : %s", file_name);
+  free(tmp);
 
   //Let's go girls
   fp=fopen(file_name, "r+");
@@ -290,11 +311,17 @@ void nodes_read() {
   struct node_struct * node;
   struct base_struct * base;
   
-  printf("Reading nodes\n");
+  logger("Reading nodes");
   bs=bases;
 
   file_name=construct_file_name("data_dir", "node_file");
-  printf("Base attribute file : %s\n", file_name);
+
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Base attribute file : %s", file_name);
+  logger(tmp);
+  free(tmp);
 
   //Let's go girls
   fp=fopen(file_name, "r+");
@@ -344,13 +371,19 @@ void bases_attributes_read() {
   long int len;
   long int position;
   
-  printf("Reading bases attributes\n");
+  logger("Reading bases attributes");
 
   bs=bases;
 
   file_name=construct_file_name("data_dir", "base_attribute_file");
-  printf("Base attribute file : %s\n", file_name);
 
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp,"Base attribute file : %s", file_name);
+  logger(tmp);
+  free(tmp);
+  
   //Let's go girls
   fp=fopen(file_name, "r+");
   if (fp!=NULL) {
@@ -409,17 +442,26 @@ void bases_read() {
   char * buffer=NULL;
   long int base_id;
   
-  printf("Reading Bases\n");
+  logger("Reading Bases");
 
   bs=bases;
 
   totaal=construct_file_name("data_dir","base_file");
-  
-  printf("Base file : %s\n", totaal);
 
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Base file : %s", totaal);
+  logger(tmp);
+  free(tmp);
+       
   fp=fopen(totaal, "r+");
   if (fp!=NULL) {
-    printf("Basefile exists : %s\n", totaal);
+    tmp=malloc(100);
+    bzero(tmp, 100);
+
+    sprintf(tmp, "Basefile exists : %s", totaal);
+    logger(tmp);
+    free(tmp);
 
     //now comes the heavy lifting : reading from the file into bases
 
@@ -430,7 +472,13 @@ void bases_read() {
       fseek(fp, position, SEEK_SET);
       fread(&base_id, sizeof(long int), 1, fp);
       if (base_id!=0){
-	printf("Position : %i Base id %i\n", position, base_id);
+	char * tmp;
+	tmp=malloc(100);
+	bzero(tmp, 100);
+	sprintf(tmp, "Position : %i Base id %i", position, base_id);
+	logger(tmp);
+	free(tmp);
+  
 	struct base_struct * b;
 
 	b=base_new(base_id);
@@ -443,8 +491,13 @@ void bases_read() {
     }
     fclose(fp);
   } else {
-    printf("Create basefile : %s\n", totaal);
-
+    char * tmp;
+    tmp=malloc(100);
+    bzero(tmp, 100);
+    sprintf(tmp, "Create basefile : %s", totaal);
+    logger(tmp);
+    free(tmp);
+  
     //create the actual file
     create_file(totaal);
   }
@@ -458,10 +511,10 @@ void reader() {
   struct base_struct * b;
   struct attribute_struct * a;
 
-  printf("Reading data into g10\n");
+  logger("Reading data into g10");
   bs=bases;
   b=base_new(0);
-  bs=dll_add(bs, b); //new file bas
+  bs=dll_add(bs, b); //new file base
   a=attribute_new(0,"name", "files");
   b->attributes=dll_add(b->attributes, a);
   

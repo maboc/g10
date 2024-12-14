@@ -10,6 +10,7 @@
 #include <pthread.h>
 #include <unistd.h>
 #include "handler.h"
+#include "logging.h"
 
 extern int goon;
 

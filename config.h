@@ -10,6 +10,7 @@
 #include "node.h"
 #include "base.h"
 #include "parser.h"
+#include "logging.h"
 
 extern struct dll * bases;
 

@@ -5,6 +5,7 @@
 #include <pthread.h>
 #include "structs.h"
 #include "config.h"
+#include "logging.h"
 
 extern int goon;
 extern struct dll * bases;
