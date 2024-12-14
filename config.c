@@ -49,7 +49,9 @@ struct dll * config_init(void){
   cfg_file_name=malloc(strlen("g10.cfg")+1); // Yes....the name of the config file is hardcoded
   bzero(cfg_file_name, strlen("g10.cfg")+1);
   cfg_file_name=strncpy(cfg_file_name, "g10.cfg", strlen("g10.cfg"));
+
   printf("Config file : %s\n", cfg_file_name);
+  
   cfg_file=fopen(cfg_file_name, "r"); // For now the configuration is readonly
   if (cfg_file!=NULL){  
 

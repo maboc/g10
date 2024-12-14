@@ -14,7 +14,11 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
   long int tmp_id, len;
   long int max_attribute_size;
 
-  printf("Writing relation attribute : attribute :%i, base:%i, node:%i, relation:%i\n", a->swid, b->swid, n->swid, r->swid);
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Writing relation attribute : attribute :%i, base:%i, node:%i, relation:%i", a->swid, b->swid, n->swid, r->swid);
+  logger(tmp);
+  free(tmp);
 
   if(a->control->file==NULL) {
     //never written before 
@@ -32,7 +36,6 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
     bzero(a->control->file, strlen(file_attribute->value)+1);
     a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
 
-    printf("Writing _new_ relation attribute : %i\n", a->swid);
     max_attribute_size=config_get_int("max_attribute_size");
     
     fp=fopen(a->control->file, "r+");
@@ -62,8 +65,6 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
     }
     fclose(fp);
   } else {
-    
-    printf("Writing _existing_relation attribute %i\n", a->swid);
     fp=fopen(a->control->file, "r+");
     
     fseek(fp, a->control->position, SEEK_SET);
@@ -113,8 +114,12 @@ void write_relation(struct base_struct * b, struct node_struct * n, struct relat
   int written=0;
   long int tmp_relation_swid;
   
-
-  printf("writing relation: relation :%i, node :%i, relation :%i, node_to :%i\n", b->swid, n->swid, r->swid, n_t->swid);
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "writing relation: relation :%i, node :%i, relation :%i, node_to :%i", b->swid, n->swid, r->swid, n_t->swid);
+  logger(tmp);
+  free(tmp);
   
   if (r->control->file==NULL) {
     //never written before
@@ -131,8 +136,6 @@ void write_relation(struct base_struct * b, struct node_struct * n, struct relat
     r->control->file=malloc(strlen(file_attribute->value)+1);
     bzero(r->control->file, strlen(file_attribute->value)+1);
     r->control->file=strncpy(r->control->file, file_attribute->value, strlen(file_attribute->value));
-
-    printf("Writing _new_ relation %i\n", r->swid);
 
     fp=fopen(r->control->file, "r+");
     position=0;
@@ -155,9 +158,6 @@ void write_relation(struct base_struct * b, struct node_struct * n, struct relat
     }
     fclose(fp);
   } else {
-    
-    printf("Writing _existing_ relation :%i\n", r->swid);
-    
     fp=fopen(r->control->file, "r+");
     
     fseek(fp, r->control->position, SEEK_SET);
@@ -204,12 +204,16 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
   char * file_name;
   int written=0;
   long int position=0;
-  char * tmp;
   long int tmp_id, len;
   long int max_attribute_size;
-  
-  printf("Writing node attribute : attribute :%i, base :%i, node %i\n", a->swid, b->swid, n->swid);  
 
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Writing node attribute : attribute :%i, base :%i, node %i", a->swid, b->swid, n->swid);  
+  logger(tmp);
+  free(tmp);
+  
   if(a->control->file==NULL) {
     //never written before
     //so which file is for base_attributes
@@ -226,7 +230,6 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
     bzero(a->control->file, strlen(file_attribute->value)+1);
     a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
 
-    printf("Writing _new_ node_attribute :%i\n", a->swid);
     max_attribute_size=config_get_int("max_attribute_size");
     
     fp=fopen(a->control->file, "r+");
@@ -255,8 +258,6 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
     }
     fclose(fp);
   } else {
-    
-    printf("Writing _exisiting_ node attribute :%i\n", a->swid);
     fp=fopen(a->control->file, "r+");
     
     fseek(fp, a->control->position, SEEK_SET);
@@ -303,8 +304,13 @@ void write_node(struct base_struct * base, struct node_struct * node) {
   FILE * fp;
   long int position;
   int written=0;
-  
-  printf("writing node: node :%i, base :%i\n", node->swid, base->swid);
+
+  char * tmp;
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "writing node: node :%i, base :%i", node->swid, base->swid);
+  logger(tmp);
+  free(tmp);
 
   if(node->control->file==NULL) {
     //never written before
@@ -321,8 +327,6 @@ void write_node(struct base_struct * base, struct node_struct * node) {
     node->control->file=malloc(strlen(a->value)+1);
     bzero(node->control->file, strlen(a->value)+1);
     node->control->file=strncpy(node->control->file, a->value, strlen(a->value));
-
-    printf("Writing _new_ node :%i\n", node->swid);
 
     fp=fopen(node->control->file, "r+");
     position=0;
@@ -343,8 +347,6 @@ void write_node(struct base_struct * base, struct node_struct * node) {
     }
     fclose(fp);
   } else {
-    
-    printf("Writing _existing_ node :%i\n", node->swid);
     
     fp=fopen(node->control->file, "r+");
     
@@ -393,8 +395,12 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
   char * tmp;
   long int tmp_id, len;
   long int max_attribute_size;
-  
-  printf("Writing base attribute: attribute :%i , base :%i\n", base->swid, attribute->swid);
+
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Writing base attribute: attribute :%i , base :%i", base->swid, attribute->swid);
+  logger(tmp);
+  free(tmp);
 
   if(attribute->control->file==NULL) {
     //never written before
@@ -412,7 +418,6 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
     bzero(attribute->control->file, strlen(a->value)+1);
     attribute->control->file=strncpy(attribute->control->file, a->value, strlen(a->value));
 
-    printf("Writing _new_ base attribute :%i\n", attribute->swid);
     max_attribute_size=config_get_int("max_attribute_size");
     
     fp=fopen(attribute->control->file, "r+");
@@ -440,8 +445,6 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
     }
     fclose(fp);
   } else {
-    
-    printf("Writing _existing_ base attribute :%i\n", attribute->swid);
     fp=fopen(attribute->control->file, "r+");
     
     fseek(fp, attribute->control->position, SEEK_SET);
@@ -489,6 +492,12 @@ void write_base(struct base_struct * b){
   long int position=0;
   char * tmp;
   long int tmp_id;
+
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Writing base %i", b->swid);
+  logger(tmp);
+  free(tmp);
   
   if (b->control->file == NULL) {
     //never written before
@@ -506,7 +515,7 @@ void write_base(struct base_struct * b){
     bzero(b->control->file, strlen(a->value)+1);
     b->control->file=strncpy(b->control->file, a->value, strlen(a->value));
 
-    printf("Writing _new_ base :%i\n", b->swid);
+    printf("Writing _new_ base :%i", b->swid);
     fp=fopen(b->control->file, "r+");
     
     while(written==0) {
@@ -525,7 +534,7 @@ void write_base(struct base_struct * b){
     fclose(fp);
   } else {
     
-    printf("Writing _existing_ base :%i\n", b->swid);
+    printf("Writing _existing_ base :%i", b->swid);
     fp=fopen(b->control->file, "r+");
     
     fseek(fp, b->control->position, SEEK_SET);
@@ -563,29 +572,47 @@ void process_bases(struct dll * bs){
 
 void * writer(void * data_in){
   struct dll * bs;
+  char * tmp;
 
   bs=bases;
   
   while (goon==0) {
-    printf("Starting a writer-sweep\n");
-
+    tmp=malloc(100);
+    bzero(tmp, 100);
+    sprintf(tmp, "Starting a writer-sweep");
+    logger(tmp);
+    free(tmp);
+    
     if (bs!=NULL) {
       process_bases(bs);
     }  else {
-      printf("How can there be no bases at all\n"); 
+      tmp=malloc(100);
+      bzero(tmp, 100);
+      sprintf(tmp, "How can there be no bases at all");
+      logger(tmp);
+      free(tmp);
     }
 
     sleep(config_get_int("data_writer_interval"));
   }
-
-  printf("Stopping writer\n");
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  printf(tmp,"Stopping writer\n");
+  logger(tmp);
+  free(tmp);
+  
   pthread_exit(NULL);
 }
 
 void * writer_start(void * data_in){
+  char * tmp;
 
-  printf("Starting writer\n");
-
+  tmp=malloc(100);
+  bzero(tmp, 100);
+  sprintf(tmp, "Starting writer");
+  logger(tmp);
+  free(tmp);
+    
   pthread_t pt;
   int rc;
   rc=pthread_create(&pt, NULL, writer, NULL);
