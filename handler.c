@@ -59,6 +59,7 @@ void * handler(void * sck){
       }
       /********************************************************************************** 2 part commands */
     } else if (commands_count(commands)==2) {
+      /***********************************************************************************  bases list */
       if ((strncmp(commands_get_part(commands,1), "bases", 5)==0) && (strncmp(commands_get_part(commands,2), "list", 4)==0)){
 	bases_list(s);
       } else if((strncmp(commands_get_part(commands,1), "use", 3)==0)){
@@ -73,7 +74,7 @@ void * handler(void * sck){
 
 	active_base=bases_search_on_id(isearch);
  	if(active_base!=NULL) base_list(s, active_base);
-	
+	/********************************************************************************  node add */
       } else if (((strncmp(commands_get_part(commands, 1), "node", 4)==0)) && (strncmp(commands_get_part(commands, 2), "add", 3)==0)) {
 	if(active_base!=NULL){
 	  struct node_struct * n=NULL;
@@ -89,12 +90,14 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+	/*********************************************************************************  config list */
       } else if ((strncmp(commands_get_part(commands,1), "config", 6)==0) && (strncmp(commands_get_part(commands,2), "list", 4)==0)) {
 	if (bases!=NULL){
 	  struct base_struct * b;
 	  b=bases_search_on_id(0);
 	  base_display(s, b);
 	}
+	/*********************************************************************************  base display */
       } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) && (strncmp(commands_get_part(commands, 2), "display", 7)==0)) {
 	if (active_base!=NULL){
 	  base_display(s, active_base);
@@ -106,10 +109,12 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+	/*********************************************************************************  base display */
       } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) && (strncmp(commands_get_part(commands, 2), "new", 3)==0)){
 	struct base_struct * b;
 	b=base_new(0);
 	bases=dll_add(bases, b);
+	base_display(s, b);
       }
       /********************************************************************************** 4 part commands */
     } else if (commands_count(commands)==4) {
