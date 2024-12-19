@@ -1,5 +1,13 @@
 #include "relation.h"
 
+int relation_search(struct dll * attributes_list, char * key, char * value) {
+  int antwoord=0;
+  
+  antwoord=attribute_exists_by_kv(attributes_list, key, value);
+
+  return antwoord;
+}
+
 struct relation_struct * relation_search_by_swid(struct node_struct * n, int i){
   struct relation_struct * r=NULL, * rtmp=NULL;
   struct dll * list;
