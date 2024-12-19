@@ -118,6 +118,8 @@ void * handler(void * sck){
       }
       /********************************************************************************** 4 part commands */
     } else if (commands_count(commands)==4) {
+      /************************************************************************************ node search */
+      /************************************************************************************ node search swid */
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "search", 6)==0)) {
 	if (active_base!=NULL) {
@@ -144,9 +146,28 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+	/******************************************************************************** relation search */
+      } else if ((strncmp(commands_get_part(commands,1), "relation", 8)==0) &&
+		 (strncmp(commands_get_part(commands,2), "search", 5)==0)) {
+	if (active_base!=NULL) {
+	  results=NULL;
+	  results=relations_search(active_base->nodes, commands_get_part(commands, 3), commands_get_part(commands, 4));
+
+	  if (results!=NULL) nodes_display(s, results);
+	  results=results_free(results);
+	  
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
       }
       /********************************************************************************** 5 part commands */
     } else if (commands_count(commands)==5) {
+      /********************************************************************************** node add relation */
       if ((strncmp(commands_get_part(commands, 1),"node", 4)==0) &&
 	  (strncmp(commands_get_part(commands, 2), "add", 3)==0) &&
 	  (strncmp(commands_get_part(commands, 3), "relation", 8)==0)){
