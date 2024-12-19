@@ -109,7 +109,7 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
-	/*********************************************************************************  base display */
+	/*********************************************************************************  base new */
       } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) && (strncmp(commands_get_part(commands, 2), "new", 3)==0)){
 	struct base_struct * b;
 	b=base_new(0);
