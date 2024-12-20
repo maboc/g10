@@ -93,7 +93,7 @@ void relations_attributes_read() {
   long int len;
   long int position;
   
-  logger("Reading relations attributes\n");
+  logger("Reading relations attributes");
 
   bs=bases;
 
