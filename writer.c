@@ -594,7 +594,7 @@ void * writer(void * data_in){
   }
   tmp=malloc(100);
   bzero(tmp, 100);
-  printf(tmp,"Stopping writer\n");
+  sprintf(tmp,"Stopping writer");
   logger(tmp);
   free(tmp);
   
