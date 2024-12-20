@@ -515,7 +515,6 @@ void write_base(struct base_struct * b){
     bzero(b->control->file, strlen(a->value)+1);
     b->control->file=strncpy(b->control->file, a->value, strlen(a->value));
 
-    printf("Writing _new_ base :%i", b->swid);
     fp=fopen(b->control->file, "r+");
     
     while(written==0) {
@@ -533,8 +532,6 @@ void write_base(struct base_struct * b){
     }
     fclose(fp);
   } else {
-    
-    printf("Writing _existing_ base :%i", b->swid);
     fp=fopen(b->control->file, "r+");
     
     fseek(fp, b->control->position, SEEK_SET);
