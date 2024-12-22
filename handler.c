@@ -225,6 +225,7 @@ void * handler(void * sck){
 	
       }
       /********************************************************************************** 6 part commands */
+      /******************************************************************************* node add attribute */
     } else if (commands_count(commands)==6) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
@@ -247,6 +248,36 @@ void * handler(void * sck){
 	    n->attributes=dll_add(n->attributes, a);
 	    node_display(s, n);
 	  }
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+	/*************************************************************************** base update attribute */
+      } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) &&
+		 (strncmp(commands_get_part(commands, 2), "update", 6)==0) &&
+		 (strncmp(commands_get_part(commands, 3), "attribute", 9)==0)) {
+	if (active_base!=NULL){
+	  struct attribute_struct * attribute;
+	  long int attribute_swid=0;
+	  
+	  attribute_swid=atoi(commands_get_part(commands, 4));
+	  attribute=attribute_search_by_swid(active_base->attributes, attribute_swid);
+	  
+	  free(attribute->key);
+	  attribute->key=malloc(strlen(commands_get_part(commands, 5)+1));
+	  bzero(attribute->key, strlen(commands_get_part(commands, 5)+1));
+	  attribute->key=strncpy(attribute->key, commands_get_part(commands, 5), strlen(commands_get_part(commands, 5)));
+	  free(attribute->value);
+	  attribute->value=malloc(strlen(commands_get_part(commands, 6)+1));
+	  bzero(attribute->value, strlen(commands_get_part(commands, 6)+1));
+	  attribute->value=strncpy(attribute->value, commands_get_part(commands, 6), strlen(commands_get_part(commands, 6)));
+	  attribute->control->status=1; // 0 - new (or nothing) 1 - update 2 - delete
+	  attribute->control->dirty=1; // 0 - clean 1 - dirty
+	  base_list(s, active_base);
 	} else {
 	  char * tmp_local;
 	  tmp_local=malloc(100);

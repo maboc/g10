@@ -1,5 +1,25 @@
 #include "attribute.h"
 
+struct attribute_struct * attribute_search_by_swid(struct dll * attribute_list, long int swid_gezocht) {
+  struct attribute_struct * a=NULL, * result=NULL;
+  int gevonden=0;
+
+  if (attribute_list!=NULL) {
+    attribute_list=dll_first(attribute_list);
+    while (attribute_list->next!=NULL && gevonden==0) {
+      a=attribute_list->payload;
+      if (a->swid==swid_gezocht) {
+	result=a;
+	gevonden=1;
+      }
+      attribute_list=attribute_list->next;
+    }
+    a=attribute_list->payload;
+    if (a->swid==swid_gezocht) result=a;
+  }
+  return result;
+}
+
 int attribute_exists_by_kv(struct dll * list, char * key, char * value) {
   int r=0;
   struct attribute_struct * a;

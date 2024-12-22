@@ -1,4 +1,13 @@
 ## Commands
+1. base add attribute <key> <value>
+   - add an attribute to the active base
+     - key   : the key of the attribute
+     - value : the value of the attribute
+2. base update attribute <swid> <new key> <new value>
+   - Update an attribute of the active base
+     - Swid : swid of the attribute which should be updated
+     - New key   : the new key of the attribute to be updated
+     - new value : the new value of the attribute to be updated
 1. base display
    - displays a full base
    - potentially very expensive
