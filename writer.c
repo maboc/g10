@@ -402,49 +402,52 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
   logger(tmp);
   free(tmp);
 
-  if(attribute->control->file==NULL) {
-    //never written before
-    //so which file is for base_attributes
-    file_base=base_search_by_kv("name","files");
-    list=node_search_by_kv(file_base->nodes, "type", "bases_attributes");
-    // for now there is always 1 and only 1 node for type base attributes...so we can get the very first node of this list
-    n=list->payload;
-    // make the list free
-    free(list);
-    a=node_get_attribute(n->attributes, "name");
+  if (attribute->control->status==0) {
+    if(attribute->control->file==NULL) {
+      //never written before
+      //so which file is for base_attributes
+      file_base=base_search_by_kv("name","files");
+      list=node_search_by_kv(file_base->nodes, "type", "bases_attributes");
+      // for now there is always 1 and only 1 node for type base attributes...so we can get the very first node of this list
+      n=list->payload;
+      // make the list free
+      free(list);
+      a=node_get_attribute(n->attributes, "name");
 
-    //adjust the control struct of the attribute
-    attribute->control->file=malloc(strlen(a->value)+1);
-    bzero(attribute->control->file, strlen(a->value)+1);
-    attribute->control->file=strncpy(attribute->control->file, a->value, strlen(a->value));
+      //adjust the control struct of the attribute
+      attribute->control->file=malloc(strlen(a->value)+1);
+      bzero(attribute->control->file, strlen(a->value)+1);
+      attribute->control->file=strncpy(attribute->control->file, a->value, strlen(a->value));
 
-    max_attribute_size=config_get_int("max_attribute_size");
+      max_attribute_size=config_get_int("max_attribute_size");
     
-    fp=fopen(attribute->control->file, "r+");
-    position=0;
+      fp=fopen(attribute->control->file, "r+");
+      position=0;
 
-    while(written==0) {
-      fseek(fp, position, SEEK_SET);
-      fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
-      if(tmp_id==0) {
-	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
-	fwrite(&attribute->swid, sizeof(long int), 1, fp);
-	fwrite(&base->swid, sizeof(long int), 1, fp);
-	len=strlen(attribute->key);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(attribute->key, strlen(attribute->key), 1, fp);
-	len=strlen(attribute->value);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(attribute->value, strlen(attribute->value), 1, fp);
+      while(written==0) {
+	fseek(fp, position, SEEK_SET);
+	fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+	if(tmp_id==0) {
+	  fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	  fwrite(&attribute->swid, sizeof(long int), 1, fp);
+	  fwrite(&base->swid, sizeof(long int), 1, fp);
+	  len=strlen(attribute->key);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(attribute->key, strlen(attribute->key), 1, fp);
+	  len=strlen(attribute->value);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(attribute->value, strlen(attribute->value), 1, fp);
 
-	written=1;
-	attribute->control->position=position;
-      }
+	  written=1;
+	  attribute->control->position=position;
+	}
       
-      position=position+max_attribute_size;
+	position=position+max_attribute_size;
+      }
+      fclose(fp);
     }
-    fclose(fp);
-  } else {
+    // Apparently the attribute has been updated
+  } else if (attribute->control->status==1) {
     fp=fopen(attribute->control->file, "r+");
     
     fseek(fp, attribute->control->position, SEEK_SET);
@@ -458,7 +461,14 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
     fwrite(attribute->value, strlen(attribute->value), 1, fp);
         
     fclose(fp);
-  }  
+
+    attribute->control->status=0; // everything fine now
+  } else if (attribute->control->status==2) {
+    // The attribute has bee deleted
+    logger("Not implemented yes");
+    attribute->control->status=0; // everything fine now
+  }
+  
   attribute->control->dirty=0;
 }
 
