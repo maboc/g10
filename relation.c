@@ -40,6 +40,7 @@ struct relation_struct * relation_new(long int bestaande_swid, struct node_struc
   
   r=malloc(sizeof(struct relation_struct));
   c=malloc(sizeof(struct control_struct));
+  c->status=0;
   r->control=c;
   if (bestaande_swid!=0) {
     c->dirty=0;

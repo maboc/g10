@@ -146,7 +146,7 @@ void relations_attributes_read() {
 	attribute->control->file=strncpy(attribute->control->file, file_name, strlen(file_name));
 	attribute->control->position=position;
 	attribute->control->dirty=0;
-
+	attribute->control->status=0;
       }
       position=position+max_attribute_size;
     }
@@ -211,6 +211,7 @@ void relations_read() {
 	relation->control->file=strncpy(relation->control->file, file_name, strlen(file_name));
         relation->control->position=position;
 	relation->control->dirty=0;
+	relation->control->status=0;
       }
       position=position+4*sizeof(long int);
     }
@@ -286,6 +287,7 @@ void nodes_attributes_read() {
 	attribute->control->file=strncpy(attribute->control->file, file_name, strlen(file_name));
 	attribute->control->position=position;
 	attribute->control->dirty=0;
+	attribute->control->status=0;
 
       }
       position=position+max_attribute_size;
@@ -344,7 +346,7 @@ void nodes_read() {
 	node->control->file=strncpy(node->control->file, file_name, strlen(file_name));
         node->control->position=position;
 	node->control->dirty=0;
-
+	node->control->status=0;
       }
       position=position+2*sizeof(long int);
     }
@@ -417,6 +419,7 @@ void bases_attributes_read() {
 	attribute->control->file=strncpy(attribute->control->file, file_name, strlen(file_name));
 	attribute->control->position=position;
 	attribute->control->dirty=0;
+	attribute->control->status=0;
 
       }
       position=position+max_attribute_size;

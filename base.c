@@ -20,25 +20,26 @@ void base_list(int s, struct base_struct * b){
 struct base_struct * base_new(long int bestaande_swid){
   struct base_struct * b;
   struct control_struct * c;
-
+  
   b=malloc(sizeof(struct base_struct));
-  if(bestaande_swid!=0) {
-    b->swid=bestaande_swid;
-    if (b->swid>swid) swid=b->swid;
-  } else {
-    b->swid=swid++;
-  }
-  b->attributes=NULL;
-  b->nodes=NULL;
   c=malloc(sizeof(struct control_struct));
-  if(bestaande_swid!=0) {
-    c->dirty=0;
-  } else {
-    c->dirty=1;  // a base is always dirty as it is first created
-  }
+  b->control=c;
   c->file=NULL;
   c->position=-1;
-  b->control=c;
+  c->status=0;
+  
+  if(bestaande_swid!=0) {
+    b->swid=bestaande_swid;
+    if (bestaande_swid>swid) swid=bestaande_swid;
+    c->dirty=0;
+    // If the base is read from by the reader from file, the control structure will be updated in the reader (not here)
+  } else {
+    b->swid=swid++;
+    c->dirty=1;  // a base is always dirty as it is first created (not read from datafile)
+  }
+  
+  b->attributes=NULL;
+  b->nodes=NULL;
   
   return b;
 }

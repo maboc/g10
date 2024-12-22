@@ -67,6 +67,7 @@ struct node_struct * node_new(long int bestaande_swid){
   c=malloc(sizeof(struct control_struct));
   c->file=NULL;
   c->position=-1;
+  c->status=0;
   n->control=c;
 
   if (bestaande_swid==0) {
