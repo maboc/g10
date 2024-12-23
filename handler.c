@@ -213,7 +213,7 @@ void * handler(void * sck){
 	  struct attribute_struct * a;
 	  a=attribute_new(0, commands_get_part(commands, 4), commands_get_part(commands,5));
 	  active_base->attributes=dll_add(active_base->attributes, a);
-	    base_list(s, active_base);
+	  base_list(s, active_base);
 	} else {
 	  char * tmp_local;
 	  tmp_local=malloc(100);
@@ -289,9 +289,10 @@ void * handler(void * sck){
       }
       /********************************************************************************** 7 part commands */
     } else if (commands_count(commands)==7){
+      /*************************************************************************** relation add attribute */
       if ((strncmp(commands_get_part(commands,1), "relation", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
-	  (strncmp(commands_get_part(commands,3), "attribute", 9)==0)){
+	  (strncmp(commands_get_part(commands,3), "attribute", 9)==0)) {
 	if (active_base!=NULL) {
 	  struct node_struct * n;
 	  struct attribute_struct * a;
@@ -315,7 +316,7 @@ void * handler(void * sck){
 	    free(search);
 	    r=relation_search_by_swid(n, isearch);
 	    if (r!=NULL){
-	      a=attribute_new(0, commands_get_part(commands, 6), commands_get_part(commands, 7));
+	      a=attribute_new(0, commands_get_part(commands, 7), commands_get_part(commands, 7));
 	      r->attributes=dll_add(r->attributes, a);
 	      node_display(s, n);	   
 	    }
@@ -329,8 +330,52 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
-      } 
-    } 
+      }
+      /*********************************************************************************** node update attribute */
+      else if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
+	       (strncmp(commands_get_part(commands,2), "update", 6)==0) &&
+	       (strncmp(commands_get_part(commands,3), "attribute", 9)==0)) {
+	if (active_base!=NULL) {
+	  struct node_struct * node=NULL;
+	  struct attribute_struct * attribute;
+	  long int node_swid, attribute_swid;
+	  int len;
+
+	  node_swid=atoi(commands_get_part(commands, 4));
+	  node=node_search_by_swid(active_base, node_swid);
+	  if (node!=NULL) {
+	    attribute_swid=atoi(commands_get_part(commands, 5));
+	    attribute=attribute_search_by_swid(node->attributes, attribute_swid);
+	    if (attribute!=NULL) {
+	      free(attribute->key);
+	      len=strlen(commands_get_part(commands, 6));
+	      attribute->key=malloc(len+1);
+	      bzero(attribute->key, len+1);
+	      attribute->key=strncpy(attribute->key, commands_get_part(commands, 6), len);	    
+
+	      free(attribute->value);
+	      len=strlen(commands_get_part(commands, 7));
+	      attribute->value=malloc(len+1);
+	      bzero(attribute->value, len+1);
+	      attribute->value=strncpy(attribute->value, commands_get_part(commands, 7), len);
+
+	      attribute->control->dirty=1;
+	      attribute->control->status=1; // 0 - new or nothing 1 - update 2 - delete
+
+	      node_display(s, node);
+	    }
+	  }
+	
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+      }
+    }
     commands=commands_free(commands);
     write_prompt(s);
   }
