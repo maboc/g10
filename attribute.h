@@ -10,6 +10,7 @@
 
 extern long int swid;
 
+struct attribute_struct * attribute_search_by_swid(struct dll *, long int);
 int attribute_exists_by_kv(struct dll *, char *, char *);
 struct attribute_struct * attribute_search_by_key(struct dll *, char *);
 void attribute_list(int, struct attribute_struct *);

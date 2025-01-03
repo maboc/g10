@@ -20,51 +20,53 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
   logger(tmp);
   free(tmp);
 
-  if(a->control->file==NULL) {
-    //never written before 
-    //so which file is for base_attributes
-    file_base=base_search_by_kv("name","files");
-    list=node_search_by_kv(file_base->nodes, "type", "relations_attributes");
-    // for now there is always 1 and only 1 node for type relations attributes...so we can get the very first node of this list
-    file_node=list->payload;
-    // make the list free
-    free(list);
-    file_attribute=node_get_attribute(file_node->attributes, "name");
+  if (a->control->status==0) { // 0 : new or nothing 1 : updated 2 : deleted
+    if (a->control->file==NULL) {
+      //never written before 
+      //so which file is for base_attributes
+      file_base=base_search_by_kv("name","files");
+      list=node_search_by_kv(file_base->nodes, "type", "relations_attributes");
+      // for now there is always 1 and only 1 node for type relations attributes...so we can get the very first node of this list
+      file_node=list->payload;
+      // make the list free
+      free(list);
+      file_attribute=node_get_attribute(file_node->attributes, "name");
 
-    //adjust the control struct of the attribute
-    a->control->file=malloc(strlen(file_attribute->value)+1);
-    bzero(a->control->file, strlen(file_attribute->value)+1);
-    a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
+      //adjust the control struct of the attribute
+      a->control->file=malloc(strlen(file_attribute->value)+1);
+      bzero(a->control->file, strlen(file_attribute->value)+1);
+      a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
 
-    max_attribute_size=config_get_int("max_attribute_size");
+      max_attribute_size=config_get_int("max_attribute_size");
     
-    fp=fopen(a->control->file, "r+");
-    position=0;
+      fp=fopen(a->control->file, "r+");
+      position=0;
 
-    while(written==0) {
-      fseek(fp, position, SEEK_SET);
-      fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
-      if(tmp_id==0) {
-	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
-	fwrite(&a->swid, sizeof(long int), 1, fp);
-	fwrite(&b->swid, sizeof(long int), 1, fp);
-	fwrite(&n->swid, sizeof(long int), 1, fp);
-	fwrite(&r->swid, sizeof(long int), 1, fp);
-	len=strlen(a->key);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(a->key, strlen(a->key), 1, fp);
-	len=strlen(a->value);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(a->value, strlen(a->value), 1, fp);
+      while(written==0) {
+	fseek(fp, position, SEEK_SET);
+	fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+	if(tmp_id==0) {
+	  fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	  fwrite(&a->swid, sizeof(long int), 1, fp);
+	  fwrite(&b->swid, sizeof(long int), 1, fp);
+	  fwrite(&n->swid, sizeof(long int), 1, fp);
+	  fwrite(&r->swid, sizeof(long int), 1, fp);
+	  len=strlen(a->key);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(a->key, strlen(a->key), 1, fp);
+	  len=strlen(a->value);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(a->value, strlen(a->value), 1, fp);
 
-	written=1;
-	a->control->position=position;
-      }
+	  written=1;
+	  a->control->position=position;
+	}
       
-      position=position+max_attribute_size;
+	position=position+max_attribute_size;
+      }
+      fclose(fp);
     }
-    fclose(fp);
-  } else {
+  } else if (a->control->status==1) { // 0 : new or nothing 1 : updated 2 : deleted
     fp=fopen(a->control->file, "r+");
     
     fseek(fp, a->control->position, SEEK_SET);
@@ -80,7 +82,11 @@ void write_relation_attribute(struct base_struct *b, struct node_struct *n, stru
     fwrite(a->value, strlen(a->value), 1, fp);
         
     fclose(fp);
-  }  
+      
+    a->control->status=0;
+  } else if (a->control->status==2) { // 0 : new or nothing 1 : updated 2 : deleted
+    logger ("writing deleted relation attribute : not yet implemented");
+  }
   a->control->dirty=0;
 }
 
@@ -213,51 +219,54 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
   sprintf(tmp, "Writing node attribute : attribute :%i, base :%i, node %i", a->swid, b->swid, n->swid);  
   logger(tmp);
   free(tmp);
-  
-  if(a->control->file==NULL) {
-    //never written before
-    //so which file is for base_attributes
-    file_base=base_search_by_kv("name","files");
-    list=node_search_by_kv(file_base->nodes, "type", "nodes_attributes");
-    // for now there is always 1 and only 1 node for type base attributes...so we can get the very first node of this list
-    file_node=list->payload;
-    // make the list free
-    free(list);
-    file_attribute=node_get_attribute(file_node->attributes, "name");
 
-    //adjust the control struct of the attribute
-    a->control->file=malloc(strlen(file_attribute->value)+1);
-    bzero(a->control->file, strlen(file_attribute->value)+1);
-    a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
+  if (a->control->status==0) {
+    if(a->control->file==NULL) {
+      //never written before
+      //so which file is for base_attributes
+      file_base=base_search_by_kv("name","files");
+      list=node_search_by_kv(file_base->nodes, "type", "nodes_attributes");
+      // for now there is always 1 and only 1 node for type base attributes...so we can get the very first node of this list
+      file_node=list->payload;
+      // make the list free
+      free(list);
+      file_attribute=node_get_attribute(file_node->attributes, "name");
 
-    max_attribute_size=config_get_int("max_attribute_size");
+      //adjust the control struct of the attribute
+      a->control->file=malloc(strlen(file_attribute->value)+1);
+      bzero(a->control->file, strlen(file_attribute->value)+1);
+      a->control->file=strncpy(a->control->file, file_attribute->value, strlen(file_attribute->value));
+
+      max_attribute_size=config_get_int("max_attribute_size");
     
-    fp=fopen(a->control->file, "r+");
-    position=0;
+      fp=fopen(a->control->file, "r+");
+      position=0;
 
-    while(written==0) {
-      fseek(fp, position, SEEK_SET);
-      fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
-      if(tmp_id==0) {
-	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
-	fwrite(&a->swid, sizeof(long int), 1, fp);
-	fwrite(&b->swid, sizeof(long int), 1, fp);
-	fwrite(&n->swid, sizeof(long int), 1, fp);
-	len=strlen(a->key);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(a->key, strlen(a->key), 1, fp);
-	len=strlen(a->value);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(a->value, strlen(a->value), 1, fp);
+      while(written==0) {
+	fseek(fp, position, SEEK_SET);
+	fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+	if(tmp_id==0) {
+	  fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	  fwrite(&a->swid, sizeof(long int), 1, fp);
+	  fwrite(&b->swid, sizeof(long int), 1, fp);
+	  fwrite(&n->swid, sizeof(long int), 1, fp);
+	  len=strlen(a->key);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(a->key, strlen(a->key), 1, fp);
+	  len=strlen(a->value);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(a->value, strlen(a->value), 1, fp);
 
-	written=1;
-	a->control->position=position;
-      }
+	  written=1;
+	  a->control->position=position;
+	}
       
-      position=position+max_attribute_size;
+	position=position+max_attribute_size;
+      }
+      fclose(fp);
     }
-    fclose(fp);
-  } else {
+  }else if (a->control->status==1) {
+    // attribute is updated
     fp=fopen(a->control->file, "r+");
     
     fseek(fp, a->control->position, SEEK_SET);
@@ -270,9 +279,15 @@ void write_node_attribute(struct base_struct * b, struct node_struct * n, struct
     len=strlen(a->value);
     fwrite(&len, sizeof(long int), 1, fp);
     fwrite(a->value, strlen(a->value), 1, fp);
-        
+    
     fclose(fp);
-  }  
+    
+    a->control->status=0;
+  } else if (a->control->status==2) {
+    logger("Update Node Attribute : not implemented yet");
+    a->control->status=0;
+  }
+  
   a->control->dirty=0;
 }
 
@@ -402,49 +417,52 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
   logger(tmp);
   free(tmp);
 
-  if(attribute->control->file==NULL) {
-    //never written before
-    //so which file is for base_attributes
-    file_base=base_search_by_kv("name","files");
-    list=node_search_by_kv(file_base->nodes, "type", "bases_attributes");
-    // for now there is always 1 and only 1 node for type base attributes...so we can get the very first node of this list
-    n=list->payload;
-    // make the list free
-    free(list);
-    a=node_get_attribute(n->attributes, "name");
+  if (attribute->control->status==0) {
+    if(attribute->control->file==NULL) {
+      //never written before
+      //so which file is for base_attributes
+      file_base=base_search_by_kv("name","files");
+      list=node_search_by_kv(file_base->nodes, "type", "bases_attributes");
+      // for now there is always 1 and only 1 node for type base attributes...so we can get the very first node of this list
+      n=list->payload;
+      // make the list free
+      free(list);
+      a=node_get_attribute(n->attributes, "name");
 
-    //adjust the control struct of the attribute
-    attribute->control->file=malloc(strlen(a->value)+1);
-    bzero(attribute->control->file, strlen(a->value)+1);
-    attribute->control->file=strncpy(attribute->control->file, a->value, strlen(a->value));
+      //adjust the control struct of the attribute
+      attribute->control->file=malloc(strlen(a->value)+1);
+      bzero(attribute->control->file, strlen(a->value)+1);
+      attribute->control->file=strncpy(attribute->control->file, a->value, strlen(a->value));
 
-    max_attribute_size=config_get_int("max_attribute_size");
+      max_attribute_size=config_get_int("max_attribute_size");
     
-    fp=fopen(attribute->control->file, "r+");
-    position=0;
+      fp=fopen(attribute->control->file, "r+");
+      position=0;
 
-    while(written==0) {
-      fseek(fp, position, SEEK_SET);
-      fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
-      if(tmp_id==0) {
-	fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
-	fwrite(&attribute->swid, sizeof(long int), 1, fp);
-	fwrite(&base->swid, sizeof(long int), 1, fp);
-	len=strlen(attribute->key);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(attribute->key, strlen(attribute->key), 1, fp);
-	len=strlen(attribute->value);
-	fwrite(&len, sizeof(long int), 1, fp);
-	fwrite(attribute->value, strlen(attribute->value), 1, fp);
+      while(written==0) {
+	fseek(fp, position, SEEK_SET);
+	fread(&tmp_id, sizeof(long int), 1, fp);//alleen een tmp_id ophalen om te checken of deze position leeg is!!!
+	if(tmp_id==0) {
+	  fseek(fp, position, SEEK_SET);    //de positie zetten (ook na de eerste keer..de fread verzet de pointer)
+	  fwrite(&attribute->swid, sizeof(long int), 1, fp);
+	  fwrite(&base->swid, sizeof(long int), 1, fp);
+	  len=strlen(attribute->key);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(attribute->key, strlen(attribute->key), 1, fp);
+	  len=strlen(attribute->value);
+	  fwrite(&len, sizeof(long int), 1, fp);
+	  fwrite(attribute->value, strlen(attribute->value), 1, fp);
 
-	written=1;
-	attribute->control->position=position;
-      }
+	  written=1;
+	  attribute->control->position=position;
+	}
       
-      position=position+max_attribute_size;
+	position=position+max_attribute_size;
+      }
+      fclose(fp);
     }
-    fclose(fp);
-  } else {
+    // Apparently the attribute has been updated
+  } else if (attribute->control->status==1) {
     fp=fopen(attribute->control->file, "r+");
     
     fseek(fp, attribute->control->position, SEEK_SET);
@@ -458,7 +476,14 @@ void write_base_attribute(struct base_struct * base, struct attribute_struct * a
     fwrite(attribute->value, strlen(attribute->value), 1, fp);
         
     fclose(fp);
-  }  
+
+    attribute->control->status=0; // everything fine now
+  } else if (attribute->control->status==2) {
+    // The attribute has bee deleted
+    logger("Delete Base Attribute : Not implemented yes");
+    attribute->control->status=0; // everything fine now
+  }
+  
   attribute->control->dirty=0;
 }
 

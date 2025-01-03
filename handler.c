@@ -213,7 +213,7 @@ void * handler(void * sck){
 	  struct attribute_struct * a;
 	  a=attribute_new(0, commands_get_part(commands, 4), commands_get_part(commands,5));
 	  active_base->attributes=dll_add(active_base->attributes, a);
-	    base_list(s, active_base);
+	  base_list(s, active_base);
 	} else {
 	  char * tmp_local;
 	  tmp_local=malloc(100);
@@ -225,6 +225,7 @@ void * handler(void * sck){
 	
       }
       /********************************************************************************** 6 part commands */
+      /******************************************************************************* node add attribute */
     } else if (commands_count(commands)==6) {
       if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
@@ -255,12 +256,78 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+	/************************************************************************ relation update relation */
+      } else if ((strncmp(commands_get_part(commands, 1), "relation", 8)==0) &&
+		 (strncmp(commands_get_part(commands, 2), "update", 6)==0) &&
+		 (strncmp(commands_get_part(commands, 3), "relation", 8)==0)) {
+
+	if (active_base!=NULL) {
+	  struct node_struct * node=NULL, * relates_to_node=NULL;
+	  struct relation_struct * relation=NULL;
+	  long int node_swid, relation_swid, relates_to_node_swid;
+
+	  node_swid=atoi(commands_get_part(commands, 4));
+	  node=node_search_by_swid(active_base, node_swid);
+	  if (node!=NULL) {
+	    relation_swid=atoi(commands_get_part(commands,5));
+	    relation=relation_search_by_swid(node, relation_swid);
+	    if ( relation!=NULL) {
+	      relates_to_node_swid=atoi(commands_get_part(commands, 6));
+	      relates_to_node=node_search_by_swid(active_base, relates_to_node_swid);
+	      if (relates_to_node!=NULL) {
+		relation->node_to=relates_to_node;
+		relation->control->dirty=1;
+		relation->control->status=1;
+
+		node_display(s, node);
+	      }
+	    }
+	  }
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+	/*************************************************************************** base update attribute */
+      } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) &&
+		 (strncmp(commands_get_part(commands, 2), "update", 6)==0) &&
+		 (strncmp(commands_get_part(commands, 3), "attribute", 9)==0)) {
+	if (active_base!=NULL){
+	  struct attribute_struct * attribute;
+	  long int attribute_swid=0;
+	  
+	  attribute_swid=atoi(commands_get_part(commands, 4));
+	  attribute=attribute_search_by_swid(active_base->attributes, attribute_swid);
+	  
+	  free(attribute->key);
+	  attribute->key=malloc(strlen(commands_get_part(commands, 5)+1));
+	  bzero(attribute->key, strlen(commands_get_part(commands, 5)+1));
+	  attribute->key=strncpy(attribute->key, commands_get_part(commands, 5), strlen(commands_get_part(commands, 5)));
+	  free(attribute->value);
+	  attribute->value=malloc(strlen(commands_get_part(commands, 6)+1));
+	  bzero(attribute->value, strlen(commands_get_part(commands, 6)+1));
+	  attribute->value=strncpy(attribute->value, commands_get_part(commands, 6), strlen(commands_get_part(commands, 6)));
+	  attribute->control->status=1; // 0 - new (or nothing) 1 - update 2 - delete
+	  attribute->control->dirty=1; // 0 - clean 1 - dirty
+	  base_list(s, active_base);
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
       }
       /********************************************************************************** 7 part commands */
     } else if (commands_count(commands)==7){
+      /*************************************************************************** relation add attribute */
       if ((strncmp(commands_get_part(commands,1), "relation", 4)==0) &&
 	  (strncmp(commands_get_part(commands,2), "add", 6)==0) &&
-	  (strncmp(commands_get_part(commands,3), "attribute", 9)==0)){
+	  (strncmp(commands_get_part(commands,3), "attribute", 9)==0)) {
 	if (active_base!=NULL) {
 	  struct node_struct * n;
 	  struct attribute_struct * a;
@@ -298,8 +365,103 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
-      } 
-    } 
+      }
+      /*********************************************************************************** node update attribute */
+      else if ((strncmp(commands_get_part(commands,1), "node", 4)==0) &&
+	       (strncmp(commands_get_part(commands,2), "update", 6)==0) &&
+	       (strncmp(commands_get_part(commands,3), "attribute", 9)==0)) {
+	if (active_base!=NULL) {
+	  struct node_struct * node=NULL;
+	  struct attribute_struct * attribute;
+	  long int node_swid, attribute_swid;
+	  int len;
+
+	  node_swid=atoi(commands_get_part(commands, 4));
+	  node=node_search_by_swid(active_base, node_swid);
+	  if (node!=NULL) {
+	    attribute_swid=atoi(commands_get_part(commands, 5));
+	    attribute=attribute_search_by_swid(node->attributes, attribute_swid);
+	    if (attribute!=NULL) {
+	      free(attribute->key);
+	      len=strlen(commands_get_part(commands, 6));
+	      attribute->key=malloc(len+1);
+	      bzero(attribute->key, len+1);
+	      attribute->key=strncpy(attribute->key, commands_get_part(commands, 6), len);	    
+
+	      free(attribute->value);
+	      len=strlen(commands_get_part(commands, 7));
+	      attribute->value=malloc(len+1);
+	      bzero(attribute->value, len+1);
+	      attribute->value=strncpy(attribute->value, commands_get_part(commands, 7), len);
+
+	      attribute->control->dirty=1;
+	      attribute->control->status=1; // 0 - new or nothing 1 - update 2 - delete
+
+	      node_display(s, node);
+	    }
+	  }	
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
+      }
+      /********************************************************************************************** 8 part commands */
+    } else if (commands_count(commands)==8) {
+      /************************************************************************************ relation update attribute */
+      if ((strncmp(commands_get_part(commands,1), "relation", 8)==0) &&
+	       (strncmp(commands_get_part(commands,2), "update", 6)==0) &&
+	       (strncmp(commands_get_part(commands,3), "attribute", 9)==0)) {
+	struct node_struct * node=NULL;
+	struct relation_struct * relation=NULL;
+	struct attribute_struct * attribute=NULL;
+	long int node_swid=0, relation_swid=0, attribute_swid=0;
+	char * key, * value;
+	long int len;
+	
+	node_swid=atoi(commands_get_part(commands, 4));
+	if (active_base !=NULL) {
+	  node=node_search_by_swid(active_base, node_swid);
+	  if (node!=NULL) {
+	    relation_swid=atoi(commands_get_part(commands, 5));
+	    relation=relation_search_by_swid(node, relation_swid);
+	    if (relation!=NULL) {
+	      attribute_swid=atoi(commands_get_part(commands, 6));
+	      attribute=attribute_search_by_swid(relation->attributes, attribute_swid);
+	      if (attribute!=NULL) {
+		free(attribute->key);
+		len=strlen(commands_get_part(commands, 7));
+		attribute->key=malloc(len+1);
+		bzero(attribute->key, len+1);
+		attribute->key=strncpy(attribute->key, commands_get_part(commands, 7), len);	    
+
+		free(attribute->value);
+		len=strlen(commands_get_part(commands, 8));
+		attribute->value=malloc(len+1);
+		bzero(attribute->value, len+1);
+		attribute->value=strncpy(attribute->value, commands_get_part(commands, 8), len);
+
+		attribute->control->dirty=1;
+		attribute->control->status=1; // 0 - new or nothing 1 - update 2 - delete
+
+		node_display(s, node);
+	      }
+	    }
+	  }
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	} 
+      }
+    }
+    
     commands=commands_free(commands);
     write_prompt(s);
   }
