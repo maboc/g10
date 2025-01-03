@@ -256,6 +256,41 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+	/************************************************************************ relation update relation */
+      } else if ((strncmp(commands_get_part(commands, 1), "relation", 8)==0) &&
+		 (strncmp(commands_get_part(commands, 2), "update", 6)==0) &&
+		 (strncmp(commands_get_part(commands, 3), "relation", 8)==0)) {
+
+	if (active_base!=NULL) {
+	  struct node_struct * node=NULL, * relates_to_node=NULL;
+	  struct relation_struct * relation=NULL;
+	  long int node_swid, relation_swid, relates_to_node_swid;
+
+	  node_swid=atoi(commands_get_part(commands, 4));
+	  node=node_search_by_swid(active_base, node_swid);
+	  if (node!=NULL) {
+	    relation_swid=atoi(commands_get_part(commands,5));
+	    relation=relation_search_by_swid(node, relation_swid);
+	    if ( relation!=NULL) {
+	      relates_to_node_swid=atoi(commands_get_part(commands, 6));
+	      relates_to_node=node_search_by_swid(active_base, relates_to_node_swid);
+	      if (relates_to_node!=NULL) {
+		relation->node_to=relates_to_node;
+		relation->control->dirty=1;
+		relation->control->status=1;
+
+		node_display(s, node);
+	      }
+	    }
+	  }
+	} else {
+	  char * tmp_local;
+	  tmp_local=malloc(100);
+	  bzero(tmp_local, 100);
+	  sprintf(tmp_local, "\n\nBase is not set\r\n");
+	  write(s, tmp_local, strlen(tmp_local));
+	  free(tmp_local);
+	}
 	/*************************************************************************** base update attribute */
       } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) &&
 		 (strncmp(commands_get_part(commands, 2), "update", 6)==0) &&
