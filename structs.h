@@ -39,7 +39,7 @@ struct control_struct{
   int dirty;             //0: clean  1: dirty
   char * file;
   long int position;
-  int status; // 0 - nothing (or new) 1 - update -2 delete
+  int status; // 0: nothing (or new) 1: update 2: delete
 };
 
 #endif
