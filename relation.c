@@ -53,7 +53,7 @@ struct relation_struct * relation_new(long int bestaande_swid, struct node_struc
   
   r->node_to=n;
   r->attributes=NULL;
-  
+
   return r;
 }
 

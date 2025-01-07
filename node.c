@@ -80,7 +80,8 @@ struct node_struct * node_new(long int bestaande_swid){
   }
   n->attributes=NULL;
   n->relations=NULL;
-
+  n->inverse_relations=NULL;
+  
   return n;
 }
 
