@@ -281,6 +281,10 @@ void * handler(void * sck){
 	      relates_to_node=node_search_by_swid(active_base, relates_to_node_swid);
 	      if (relates_to_node!=NULL) {
 		// the inverse relation moet eerst op de oude node verwijderd worden
+		struct node_struct * old_node=NULL;
+		old_node=relation->node_to;
+		//Op node waar naar verwezen wordt, wordt de inverse rlation naar deze (huidige) node gewist.
+		old_node->inverse_relations=node_delete_inverse_relation(old_node->inverse_relations, node);
 		
 		relation->node_to=relates_to_node;
 		relation->control->dirty=1;

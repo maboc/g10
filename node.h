@@ -12,6 +12,7 @@
 
 extern long int swid;
 
+struct dll * node_delete_inverse_relation(struct dll *, struct node_struct *);
 struct dll * node_search_by_kv(struct dll *, char *, char *);
 struct attribute_struct * node_get_attribute(struct dll *, char *);
 int node_match_attribute(struct node_struct *, char *, char *);

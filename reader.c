@@ -205,7 +205,9 @@ void relations_read() {
 
 	relation=relation_new(tmp_relation_swid, node_to);
 	node->relations=dll_add(node->relations, relation);
-
+	//Maar ook de inverse relation moet worden ingezet
+	node_to->inverse_relations=dll_add(node_to->inverse_relations, node);
+	
 	relation->control->file=malloc(strlen(file_name)+1);
 	bzero(relation->control->file, strlen(file_name)+1);
 	relation->control->file=strncpy(relation->control->file, file_name, strlen(file_name));
