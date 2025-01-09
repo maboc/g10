@@ -1,5 +1,6 @@
 #include "node.h"
 
+
 struct dll * node_delete_inverse_relation(struct dll * inverse_relations, struct node_struct * node){
   struct dll * r=NULL;
   struct dll * prev_ir, * current_ir, * next_ir;
