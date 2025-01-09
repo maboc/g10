@@ -1,5 +1,54 @@
 #include "node.h"
 
+struct dll * node_delete_inverse_relation(struct dll * inverse_relations, struct node_struct * node){
+  struct dll * r=NULL;
+  struct dll * prev_ir, * current_ir, * next_ir;
+
+  if (inverse_relations != NULL) {
+    if ((inverse_relations->prev==NULL) && (inverse_relations->next==NULL)) {
+      //there is only one entry....then this must be the one
+      free(inverse_relations);
+      r=NULL;
+    } else {
+      //apperantly there are more then 1 relations pointing towards this node
+      inverse_relations=dll_first(inverse_relations);
+      int gevonden=0;
+      while ((inverse_relations->next!=NULL) && (gevonden!=1)) {
+	if (inverse_relations->payload==node) {
+	  //yes...gevonden
+	  gevonden=1;
+	  
+	  prev_ir=inverse_relations->prev;
+	  current_ir=inverse_relations;
+	  next_ir=inverse_relations->next;
+
+	  free(current_ir);
+	  if (prev_ir==NULL){
+	    next_ir->prev=NULL;
+	    inverse_relations=next_ir;
+	  } else if (next_ir==NULL) {
+	    prev_ir->next=NULL;
+	    inverse_relations=prev_ir;
+	  } else {
+	    prev_ir->next=next_ir;
+	    next_ir->prev=prev_ir;
+	    inverse_relations=prev_ir;
+	  }
+	}
+	inverse_relations=inverse_relations->next;
+      }
+      if (inverse_relations->payload==node) {
+	struct dll * tmp;
+	tmp=inverse_relations;
+	inverse_relations->prev->next==NULL;
+	free(tmp);
+      }      
+      r=inverse_relations;
+    }
+  }
+  return r;
+}
+
 struct dll * node_search_by_kv(struct dll * list, char * k, char *v){
   struct dll * result=NULL;
   struct node_struct * n;
@@ -80,7 +129,8 @@ struct node_struct * node_new(long int bestaande_swid){
   }
   n->attributes=NULL;
   n->relations=NULL;
-
+  n->inverse_relations=NULL;
+  
   return n;
 }
 
@@ -96,6 +146,9 @@ void node_display(int s, struct node_struct * node){
     write(s, tmp, strlen(tmp));
     bzero(tmp,100);
     sprintf(tmp, "Swid : %i\r\n", node->swid);
+    write(s, tmp, strlen(tmp));
+    bzero(tmp, 100);
+    sprintf(tmp,"Inverse relations : %i\r\n", dll_count(node->inverse_relations));
     write(s, tmp, strlen(tmp));
     free(tmp);
     l=node->attributes;

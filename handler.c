@@ -182,7 +182,7 @@ void * handler(void * sck){
 	  search=strncpy(search, commands_get_part(commands, 4), strlen(commands_get_part(commands, 4)));
 
 	  isearch=atoi(search);
-	  n1=node_search_by_swid(active_base, isearch);
+	  n1=node_search_by_swid(active_base, isearch); // node on which the relation is defined
 	  free(search);
 	  
 	  search=malloc(strlen(commands_get_part(commands, 5))+1);
@@ -190,11 +190,15 @@ void * handler(void * sck){
 	  search=strncpy(search, commands_get_part(commands, 5), strlen(commands_get_part(commands, 5)));
 
 	  isearch=atoi(search);
-	  n2=node_search_by_swid(active_base, isearch);
+	  n2=node_search_by_swid(active_base, isearch); //node to which the relation is pointing
 	  free(search);
 	  if((n1!=NULL) && (n2!=NULL)){
 	    r=relation_new(0, n2);
 	    n1->relations=dll_add(n1->relations, r);
+
+	    // also add a inverse_relation on the pointed to node
+	    n2->inverse_relations=dll_add(n2->inverse_relations, n1);
+	    
 	    node_display(s, n1);
 	  }
 	  
@@ -206,6 +210,7 @@ void * handler(void * sck){
 	  write(s, tmp_local, strlen(tmp_local));
 	  free(tmp_local);
 	}
+	/***************************************************************************** base add attribute */
       } else if ((strncmp(commands_get_part(commands, 1), "base", 4)==0) &&
 		 (strncmp(commands_get_part(commands, 2), "add", 3)==0) &&
 		 (strncmp(commands_get_part(commands, 3), "attribute", 9)==0)){
@@ -275,6 +280,12 @@ void * handler(void * sck){
 	      relates_to_node_swid=atoi(commands_get_part(commands, 6));
 	      relates_to_node=node_search_by_swid(active_base, relates_to_node_swid);
 	      if (relates_to_node!=NULL) {
+		// the inverse relation moet eerst op de oude node verwijderd worden
+		struct node_struct * old_node=NULL;
+		old_node=relation->node_to;
+		//Op node waar naar verwezen wordt, wordt de inverse rlation naar deze (huidige) node gewist.
+		old_node->inverse_relations=node_delete_inverse_relation(old_node->inverse_relations, node);
+		
 		relation->node_to=relates_to_node;
 		relation->control->dirty=1;
 		relation->control->status=1;

@@ -18,6 +18,7 @@ struct node_struct{
   long int swid;
   struct dll * attributes;
   struct dll * relations;
+  struct dll * inverse_relations;
   struct control_struct * control;
 };
 
